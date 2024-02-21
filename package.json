@@ -1,0 +1,13 @@
+{
+  "name": "whatsappclon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "server": "cd ./server && npm run start",
+    "client": "cd ./client && npm run dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

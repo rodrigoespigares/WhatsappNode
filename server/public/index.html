@@ -1,0 +1,118 @@
+<html>
+
+<head>
+  <title>Express</title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    socket.on("entradaUsuarios", (msg) => {console.log(msg)})
+    
+    window.onload = () =>{
+      if(socket.nick == undefined){
+        document.getElementById("chat").style.display="none";
+      }
+    }
+
+    function registrar(){
+      let user = document.getElementById("user").value
+      socket.emit("usuario",user)
+      document.getElementById("chat").style.display="block";
+      document.getElementById("login").style.display="none";
+    }
+
+    function enviar(){
+      let text = document.getElementById("cajaText").value
+      let mensajes = [];
+      
+      mensajes.push(text);
+      socket.emit("mensaje",text)
+      let lista = document.createElement("ul");
+      mensajes.forEach(element => {
+        let li = document.createElement("li")
+        
+        
+        li.innerText = element;
+        lista.append(li);
+      });
+      document.getElementById("cajaText").value="";
+      document.body.appendChild(lista)
+    }
+
+    socket.on("mensaje", (text) => {
+      let mensajes = [];
+      
+      mensajes.push(text.user+" "+text.mensaje);
+      let lista = document.createElement("ul");
+      mensajes.forEach(element => {
+        let li = document.createElement("li")
+        
+        
+        li.innerText = element;
+        li.classList.add("recibo")
+        lista.append(li);
+      });
+      document.body.appendChild(lista)
+    })
+
+    function verIconos(){
+      console.log(document.getElementById("icon").style.display);
+      document.getElementById("icon").style.display == "block"?document.getElementById("icon").style.display="none":document.getElementById("icon").style.display="block";
+    }
+
+    function mandarIcono(e){
+      console.log()
+      let img = e.target.src
+
+      socket.emit("imagen",img)
+      let lista = document.createElement("ul");
+      
+        let li = document.createElement("li")
+        let imagen = document.createElement("img");
+        imagen.src=img;
+        imagen.classList.add("imagenChat")
+
+        li.append(imagen)
+        lista.append(li);
+
+      document.body.appendChild(lista)
+    }
+    socket.on("imagen", (text) => {
+
+      let lista = document.createElement("ul");
+
+        let li = document.createElement("li")
+        let imagen = document.createElement("img");
+        imagen.src = text.imagen;
+        imagen.classList.add("imagenChat")
+        
+        li.append(imagen);
+        li.classList.add("recibo")
+        lista.append(li);
+
+      document.body.appendChild(lista)
+    })
+  </script>
+</head>
+
+<body>
+  <section id="login">
+    <h1>Login</h1>
+    <input type="text" id="user">
+    <button onclick="registrar()">Chatear</button>
+  </section>
+  <section id="chat">
+    <h1>Mi chat</h1>
+    <input type="text" name="" id="cajaText">
+    <button onclick="enviar()">Enviar</button>
+    <button onclick="verIconos()">Iconos</button>
+    <div id="icon">
+      <div >
+        <img onclick="mandarIcono(event)" src="images/risa.png" alt="">
+      </div>
+    </div>
+  </section>
+</body>
+
+
+</html>

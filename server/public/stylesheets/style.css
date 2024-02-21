@@ -1,0 +1,25 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.recibo{
+  color: red;
+}
+#icon{
+  display: none;
+  width: 50%;
+}
+#icon div {
+  width: 2vw
+}
+#icon div img{
+  width: 100%;
+}
+.imagenChat{
+  width: 2vw;
+}
