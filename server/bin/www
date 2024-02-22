@@ -20,7 +20,13 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
-const io = new Server(server);
+const io = new Server({
+    cors: {
+      origin: "http://localhost:5173"
+    }
+  });
+  
+  io.listen(4000);
 
 var player = 0
 
@@ -32,12 +38,7 @@ io.on('connection', (socket) => {
         player--;
     });
     socket.on("mensaje", (msg) => {
-        mnd={
-            user:socket.nick,
-            mensaje:msg
-        }
-
-        socket.broadcast.emit("mensaje", mnd)
+        socket.broadcast.emit("mensaje", msg)
     })
     socket.on("imagen", (img) => {
         mnd={
