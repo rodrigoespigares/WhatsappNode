@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Icon } from '@iconify/react';
 import { socket } from './socket';
-import { ConnectionState } from './components/ConnectionState';
-import { ConnectionManager } from './components/ConnectionManager';
-import { Events } from "./components/Events";
+import './App.css'
 
 export default function App() {
   const [isConnected, setIsConnected] = useState(socket.connected);
@@ -17,46 +16,45 @@ export default function App() {
     function onDisconnect() {
       setIsConnected(false);
     }
-
-    function onFooEvent(value) {
-      setFooEvents(previous => [...previous, value]);
-    }
-
     
     socket.on("entradaUsuarios", (msg) => {console.log(msg)})
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
-    socket.on('foo', onFooEvent);
-
-    
 
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
-      socket.off('foo', onFooEvent);
     };
   }, []);
 
   function enviar(){
    
-    let prueba = document.getElementById("texto").value;
-    socket.emit("mensaje",prueba)
+    let envio = document.getElementById("texto").value;
+    let article = <article className='enviado'>{envio}</article>
+    setMensajes([...mensajes, article])
+    socket.emit("mensaje",envio)
 
   }
 
   socket.on("mensaje", (value) => {
     console.log(value)
-    setMensajes([...mensajes, value])
+    let article = <article className='recibido'>{value}</article>
+    setMensajes([...mensajes, article])
   })
 
   return (
     <div className="App">
-      <ConnectionState isConnected={ isConnected } />
-      <Events events={ fooEvents } />
-      <ConnectionManager />
-      <input type="text" name="" id="texto" />
-      <button onClick={enviar}>Prueba</button>
-      {mensajes}
+      
+      <section className='chat'>
+        <section className='chat__mensajes'>
+          {mensajes}
+        </section>
+        <div className='chat__input'>
+            <input type="text" name="" id="texto" />
+            <button onClick={enviar} className='chat__input__enviar'><Icon icon="fa:paper-plane" /></button>
+            
+        </div>
+      </section>
     </div>
   );
 }

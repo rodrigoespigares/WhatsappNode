@@ -1,42 +1,49 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+body{
+  padding: 0;
+  margin: 0;
 }
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.chat{
+  display: flex;
+  flex-direction: column;
+  width: 50vw;
+  height: 100vh;
+  background-color: #0B141A;
+  justify-content: end;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+.enviado{
+  color: white;
+  background-color: #005C4B;
+  border-radius: 1rem;
+  padding: 1rem;
+  margin-left: auto;
+  width: max-content;
+  
 }
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.recibido{
+  color: white;
+  background-color: #202C33;
+  border-radius: 1rem;
+  padding: 1rem;
+  width: max-content;
 }
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.chat__input{
+  background-color: #202C33;
 }
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.chat__input input{
+  width: 90%;
+  background-color: #2A3942;
+  outline: none;
+  border: none;
+  border-radius: 3rem;
+  font-size: 1rem;
+  color: white;
+  padding: 1rem;
+  
 }
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+.chat__input__enviar{
+  background-color: transparent;
+  color: white;
+  outline: none;
+  border: none;
+  font-size: 1.5rem;
 }
