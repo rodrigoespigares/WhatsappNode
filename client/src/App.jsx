@@ -50,6 +50,7 @@ export default function App() {
           {mensajes}
         </section>
         <div className='chat__input'>
+            
             <input type="text" name="" id="texto" />
             <button onClick={enviar} className='chat__input__enviar'><Icon icon="fa:paper-plane" /></button>
             
