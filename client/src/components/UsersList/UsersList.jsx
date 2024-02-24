@@ -8,13 +8,11 @@ export default function UsersList() {
     let [users, setUsers] = useState([]);
   
     useEffect(() => {
-      // Asegúrate de tener el objeto 'socket' disponible, quizás desde algún contexto o props
       socket.on("newUser", (value) => {
         console.log(value)
         setUsuarios(value);
       });
   
-      // Limpia el event listener cuando el componente se desmonta
       return () => {
         socket.off("newUser");
       };
