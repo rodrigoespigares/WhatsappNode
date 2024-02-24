@@ -7,6 +7,7 @@ const { Server } = require('socket.io');
 var app = require('../app');
 var debug = require('debug')('proyectonote:server');
 var http = require('http');
+const cors = require('cors');
 
 /**
  * Get port from environment and store in Express.
@@ -15,6 +16,7 @@ var http = require('http');
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
+app.use(cors());
 /**
  * Create HTTP server.
  */
@@ -29,6 +31,7 @@ const io = new Server({
   io.listen(4000);
 
 var player = 0
+var usuarios = [];
 
 
 io.on('connection', (socket) => {
@@ -49,6 +52,19 @@ io.on('connection', (socket) => {
     })
     socket.on("usuario", (user) => {
         socket.nick = user;
+    })
+    socket.on("login",(usuario) => {
+        socket.nick = usuario.email.split("@")[0]
+        socket.uid = usuario.uid;
+        socket.photo = usuario.photoURL;
+        let user = {
+            nick: socket.nick,
+            uid: socket.uid,
+            foto: socket.photo
+        }
+        usuarios.push(user)
+
+        socket.broadcast.emit("newUser", usuarios);
     })
 
 });
