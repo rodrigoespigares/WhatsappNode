@@ -28,7 +28,10 @@ export default function Chat() {
     }
 
     socket.on("mensaje", (value) => {
-        let article = <article key={value + Date.now()} className='recibido'>{value}</article>
+        let article =   <article key={value.text + Date.now()} className='recibido'>
+                            <h6>{value.user}</h6> 
+                            <p>{value.text}</p>  
+                        </article>
         setMensajes([...mensajes, article])
     })
 

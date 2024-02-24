@@ -30,22 +30,23 @@ const io = new Server({
   
   io.listen(4000);
 
-var player = 0
+
 var usuarios = [];
 
 
-io.on('connection', (socket) => {
-    player++;
-    io.emit("entradaUsuarios", player)
-    socket.on('disconnect', (socket) => {
-        player--;
-    });
+io.on('connection', (socket) => {    
     socket.on("mensaje", (msg) => {
-        socket.broadcast.emit("mensaje", msg)
+        let mnd={
+            user:socket.nick,
+            uid:socket.uid,
+            text:msg
+        }
+        socket.broadcast.emit("mensaje", mnd)
     })
     socket.on("imagen", (img) => {
-        mnd={
+        let mnd={
             user:socket.nick,
+            uid:socket.uid,
             imagen:img
         }
         socket.broadcast.emit("imagen", mnd)
@@ -56,15 +57,20 @@ io.on('connection', (socket) => {
     socket.on("login",(usuario) => {
         socket.nick = usuario.email.split("@")[0]
         socket.uid = usuario.uid;
-        socket.photo = usuario.photoURL;
         let user = {
             nick: socket.nick,
             uid: socket.uid,
-            foto: socket.photo
+            foto: "http://localhost:3000/images/default.webp"
         }
         usuarios.push(user)
-
-        socket.broadcast.emit("newUser", usuarios);
+        io.emit("newUser", usuarios);
+        socket.on('disconnect', () => {
+            let indiceUsuario = usuarios.findIndex(usuario => usuario.uid == socket.uid);
+            if (indiceUsuario !== -1) {
+                usuarios.splice(indiceUsuario, 1);
+            }
+            io.emit("newUser", usuarios);
+        });
     })
 
 });

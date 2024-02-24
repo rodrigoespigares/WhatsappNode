@@ -24,8 +24,14 @@
     color: white;
     background-color: #202C33;
     border-radius: 1rem;
-    padding: 1rem;
+    padding: .2rem 1rem;
     width: max-content;
+  }
+  .recibido h6{
+    color: var(--color);
+  }
+  .recibido p{
+    height: 10px;
   }
   .chat__input{
     background-color: #202C33;

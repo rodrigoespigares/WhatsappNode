@@ -19,19 +19,18 @@ export default function UsersList() {
     }, []);
   
     return (
-      <div className='lista'>
-        <h2>Lista de Usuarios:</h2>
-        <ul>
+      <div className='lista px-5'>
+        <h2 className='text-white'>Lista de Usuarios:</h2>
+        <section>
           {usuarios.map((element) => (
-            <li key={element.uid}>
-              <div>
+            <article className='d-flex align-items-center my-3 text-white usuario' key={element.uid}>
+              <div className='usuario__img'>
                 <img src={element.foto} alt={`Foto de perfil de ${element.nick}`} />
-                <p>Nick: {element.nick}</p>
-                <p>UID: {element.uid}</p>
               </div>
-            </li>
+              <h2 className='px-3'>{element.nick}</h2>
+            </article>
           ))}
-        </ul>
+        </section>
       </div>
     );
   }
