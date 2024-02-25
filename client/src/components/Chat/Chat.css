@@ -1,133 +1,164 @@
-.c{
+.c {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  background-color: #0B141A;
 }
-.chat{
-    display: flex;
-    flex-direction: column;
-    width: 75vw;
-    height: 100%;
-    background-color: #0B141A;
-    justify-content: end;
-  }
-  .enviado{
-    color: white;
-    background-color: #005C4B;
-    border-radius: 1rem;
-    padding: 1rem;
-    margin-left: auto;
-    width: max-content;
-    
-  }
-  .recibido{
-    color: white;
-    background-color: #202C33;
-    border-radius: 1rem;
-    padding: .2rem 1rem;
-    width: max-content;
-  }
-  .recibido h6{
-    color: var(--color);
-  }
-  .recibido p{
-    height: 10px;
-  }
-  .chat__input{
-    background-color: #202C33;
-    display: flex;
-  }
-  .chat__input input[type=text]{
-    width: 90%;
-    background-color: #2A3942;
-    outline: none;
-    border: none;
-    border-radius: 3rem;
-    font-size: 1rem;
-    color: white;
-    padding: 1rem;
-    
-  }
-  .chat__input__icon{
-    line-height: 3rem;
-    background-color: transparent;
-    align-items: center;
-    display: flex;
-    color: white;
-    outline: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-  }
-  .chat__input__icon__color{
-    color: white;
-    font-size: 2rem;
-    cursor: pointer;
-  }
-  .chat__input__icon__color span{
-    font-size: 1.2rem;
-  }
-  .iconos{
-    position: absolute;
-    width: 20vw;
-    background-color: #444444;
-    display: none;
-    flex-wrap: wrap;
-    bottom: 4.4%;
-    height: 20vh;
-    overflow-y: auto;
-  }
-  .icon--img{
-    background-color: transparent;
-    outline: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.2rem;
-  }
-  .subirArchivo{
-    color: white;
-    background-color: #444444;
-    position: absolute;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    bottom: 4.4%;
 
-    cursor: pointer;
-  }
-  .subirArchivo input[type=file] {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    left: 0;
-    top: 0;
-    opacity: 0;
-    cursor: pointer;
-  }
-  
-  .subirArchivo label {
-    display: inline-block;
-    color: white;
-    padding: .6rem 1.4rem;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .subirArchivo p{
-    text-align: center;
-  }
-  #fichero{
-    position: absolute;
-    height: 100vh;
-    width: 75vw;
-    background-color: red;
-    top: 0;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-  .icono__grande{
-    font-size: 10rem;
-  }
+.chat {
+  display: flex;
+  flex-direction: column;
+  width: 75vw;
+  height: 100%;
+  justify-content: end;
+}
+.chat__mensajes{
+  max-height: 85vh;
+  overflow-y: auto;
+}
+.enviado {
+  color: white;
+  background-color: #005C4B;
+  border-radius: 1rem;
+  padding: 1rem;
+  margin-left: auto;
+  width: max-content;
+
+}
+
+.recibido {
+  color: white;
+  background-color: #202C33;
+  border-radius: 1rem;
+  padding: .2rem 1rem;
+  width: max-content;
+}
+
+.recibido h6 {
+  color: var(--color);
+}
+
+.recibido p {
+  height: 10px;
+}
+
+.chat__input {
+  background-color: #202C33;
+  display: flex;
+}
+
+.chat__input input[type=text] {
+  width: 90%;
+  background-color: #2A3942;
+  outline: none;
+  border: none;
+  border-radius: 3rem;
+  font-size: 1rem;
+  color: white;
+  padding: 1rem;
+
+}
+
+.chat__input__icon {
+  line-height: 3rem;
+  background-color: transparent;
+  align-items: center;
+  display: flex;
+  color: white;
+  outline: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.chat__input__icon__color {
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+.chat__input__icon__color span {
+  font-size: 1.2rem;
+}
+
+.iconos {
+  position: absolute;
+  width: 20vw;
+  background-color: #444444;
+  display: none;
+  flex-wrap: wrap;
+  bottom: 4.4%;
+  height: 20vh;
+  overflow-y: auto;
+}
+
+.icon--img {
+  background-color: transparent;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.subirArchivo {
+  color: white;
+  background-color: #444444;
+  position: absolute;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  bottom: 4.4%;
+
+  cursor: pointer;
+}
+
+.subirArchivo .archivos{
+  width: 100%;
+}
+.subirArchivo .archivos input[type=file] {
+  position: absolute;
+  width: 100%;
+  height: 50%;
+  left: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.subirArchivo .archivos label {
+  display: inline-block;
+  padding: .6rem 1.4rem;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+}
+.subirArchivo .archivos .archivo{
+  color: #7F66FF;
+}
+.subirArchivo .archivos .foto{
+  color: #007BFC;
+}
+
+.subirArchivo .archivos label span {
+  color: white;
+}
+
+.subirArchivo .archivos p {
+  text-align: center;
+}
+
+#fichero {
+  position: absolute;
+  height: 100vh;
+  width: 75vw;
+  background-color: red;
+  top: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.icono__grande {
+  font-size: 10rem;
+}

@@ -5,7 +5,10 @@ import './Chat.css'
 
 export default function Chat() {
     const [mensajes, setMensajes] = useState([]);
-    let [icon, setIcon] = useState([])
+    let [icon, setIcon] = useState([]);
+    let [nombre, setNombre] = useState("Chat Común")
+    let [cambia, setCambia] = useState("enviar")
+    let [id, setId] = useState("")
 
     useEffect(() => {
         let newIconArray = [];
@@ -15,17 +18,7 @@ export default function Chat() {
         }
         setIcon(newIconArray);
     }, []);
-    function enviar() {
-
-        let envio = document.getElementById("texto").value;
-        let article = <article key={envio + Date.now()} className='enviado'>{envio}</article>
-        setMensajes([...mensajes, article])
-        socket.emit("mensaje", envio)
-
-        document.getElementById("texto").value = ""
-        document.getElementById("iconos").style.display = "none"
-
-    }
+    
 
     socket.on("mensaje", (value) => {
         let article =   <article key={value.text + Date.now()} className='recibido'>
@@ -79,14 +72,71 @@ export default function Chat() {
                 console.log("ERROR")
             }
 
-            )
+        )
+    }
+    function subirImagen() {
+        let fileinput = document.getElementById("fileInput");
+        let endpoint = "http://192.168.56.1:3000/upload";
+        let archivo = fileinput.files[0];
+        let form = new FormData();
+        form.append("fichero", archivo);
+        fetch(endpoint, {
+            method: 'POST',
+            body: form
+        }).then(response => response.text())
+            .then(data => {
+                limpiarInput();
+                // Mandar al chat imagen
+            }).catch((err) => {
+                console.log("ERROR")
+            }
+        )
     }
 
+    socket.on("cambioUser",(value) => {
+        if(value!=null){
+            console.log(value)
+            setNombre(value.nick)
+            setCambia("enviarMP")
+            setId(value.id)
+        }else{
+            setNombre("Chat Común")
+            setCambia("enviar")
+        }
+    })
+    function enviar(e) {
+        let envio = document.getElementById("texto").value;
+        if((e.code == "Enter" || e.code == null) && envio != "" ){
+            
+            let article = <article key={envio + Date.now()} className='enviado'>{envio}</article>
+            setMensajes([...mensajes, article])
+            socket.emit("mensaje", envio)
 
+            document.getElementById("texto").value = ""
+            document.getElementById("iconos").style.display = "none"
+        }
+    }
+    function enviarMP(e){
+
+        let envio = document.getElementById("texto").value;
+        if((e.code == "Enter" || e.code == null) && envio != "" ){
+            console.log(envio)
+            let article = <article key={envio + Date.now()} className='enviado'>{envio}</article>
+            setMensajes([...mensajes, article])
+            socket.emit('mensajePrivado', { mensaje: envio, destinatarioId: id });
+
+            document.getElementById("texto").value = ""
+            document.getElementById("iconos").style.display = "none"
+        }
+        
+    }
+    socket.on("mensajePrivado",(value) => {
+        console.log(value)
+    })
 
     return (
         <section className='c'>
-            <h2>HOLa</h2>
+            <h2 className='text-white'>{nombre}</h2>
             <section className='chat'>
             
                 <section className='chat__mensajes'>
@@ -96,8 +146,14 @@ export default function Chat() {
                     <div id='iconos' className="iconos">{icon}</div>
                     <button onClick={verIconos} className='chat__input__icon'><Icon icon="mingcute:emoji-fill" /></button>
                     <div id='archivo' className="subirArchivo">
-                        <input onChange={nombreArchivo} type="file" id="fileInput" name='archivoCompartido' />
-                        <label htmlFor="fileInput" className='chat__input__icon__color'><Icon icon="material-symbols-light:upload-file-rounded" /><span> un archivo</span></label>
+                        <div className="archivos">
+                            <input onChange={nombreArchivo} type="file" id="fileInput" name='archivoCompartido' />
+                            <label htmlFor="fileInput" className='chat__input__icon__color archivo'><Icon icon="material-symbols-light:upload-file-rounded" /><span> un archivo</span></label>
+                        </div>
+                        <div className="archivos">
+                            <input onChange={nombreArchivo} type="file" id="imgInput" name='imagenCompartido' accept="image/*"/>
+                            <label htmlFor="imgInput" className='chat__input__icon__color foto'><Icon icon="material-symbols-light:photo-camera" /><span> una imagen</span></label>
+                        </div>
                     </div>
                     <div id='fichero'>
                         <p className='icono__grande'><Icon icon="material-symbols-light:upload-file-rounded" /></p>
@@ -107,8 +163,8 @@ export default function Chat() {
                     </div>
 
                     <button onClick={verSubir} className='chat__input__icon'><Icon icon="ph:paperclip-bold" /></button>
-                    <input type="text" name="" id="texto" />
-                    <button onClick={enviar} className='chat__input__icon'><Icon icon="fa:paper-plane" /></button>
+                    <input onKeyUp={cambia === "enviar" ? enviar : enviarMP} type="text" name="" id="texto" />
+                    <button onClick={cambia === "enviar" ? enviar : enviarMP} className='chat__input__icon'><Icon icon="fa:paper-plane" /></button>
                 </div>
             </section>
 

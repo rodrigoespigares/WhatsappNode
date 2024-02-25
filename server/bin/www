@@ -58,6 +58,7 @@ io.on('connection', (socket) => {
         socket.nick = usuario.email.split("@")[0]
         socket.uid = usuario.uid;
         let user = {
+            id: socket.id,
             nick: socket.nick,
             uid: socket.uid,
             foto: "http://localhost:3000/images/default.webp"
@@ -71,6 +72,16 @@ io.on('connection', (socket) => {
             }
             io.emit("newUser", usuarios);
         });
+        socket.on("clickUser",(uid) => {
+            let indiceUsuario = usuarios.findIndex(usuario => usuario.uid == uid);
+            socket.emit("cambioUser",usuarios[indiceUsuario])
+        })
+        socket.on("mensajePrivado",(value) => {
+            let mensaje = value.mensaje;
+            let id = value.destinatarioId;
+
+            io.to(id).emit('mensajePrivado', mensaje);
+        })
     })
 
 });

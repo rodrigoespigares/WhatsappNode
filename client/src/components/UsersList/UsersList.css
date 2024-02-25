@@ -5,15 +5,23 @@
     background-color: #111B21;
 }
 .usuario{
+    background-color: transparent;
     cursor: pointer;
+    z-index: 3;
+}
+.usuario__activo{
+    background-color: #2A3942;
+    z-index: 1;
 }
 .usuario__img{
     width: 2vw;
+    z-index: 2;
 }
 .usuario__img img{
     width: 100%;
     border-radius: 51%;
 }
-.usuario__activo{
-    background-color: #2A3942;
+
+.usuario__name{
+    z-index: 2;
 }
