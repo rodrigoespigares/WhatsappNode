@@ -175,10 +175,11 @@ export default function Chat() {
                             <h6>{value.user}</h6> 
                             <p>{value.text}</p>  
                         </article>
-        setPriv(prevState => ({
-          ...prevState,
-          [value.user]: prevState[value.user] ? [...prevState[value.user], article] : [article],
-        }));
+        if (priv[value.user] !== undefined) {
+            setPriv({ ...priv, [value.user]: [...priv[value.user], article] });
+        } else {
+            setPriv({ ...priv, [value.user]: [article] });
+        }
     });
 
     return (
@@ -202,11 +203,14 @@ export default function Chat() {
                             <label htmlFor="imgInput" className='chat__input__icon__color foto'><Icon icon="material-symbols-light:photo-camera" /><span> una imagen</span></label>
                         </div>
                     </div>
-                    <div id='fichero'>
-                        <p className='icono__grande'><Icon icon="material-symbols-light:upload-file-rounded" /></p>
-                        <p id="fileName"></p>
-                        <button onClick={subirArchivo}>Subir</button>
-                        <button onClick={limpiarInput}>Cancelar</button>
+                    <div id='fichero' className='text-white'>
+                        <button className='btn fs-1' onClick={limpiarInput}><Icon icon="material-symbols:close" /></button>
+                        <div className='d-flex flex-column align-items-center fichero__content'>
+                            <p className='icono__grande'><Icon icon="material-symbols-light:upload-file-rounded" /></p>
+                            <p id="fileName"></p>
+                            <button className='btn' onClick={subirArchivo}><Icon icon="fa:paper-plane" /></button>
+                        </div>
+                        
                     </div>
 
                     <button onClick={verSubir} className='chat__input__icon'><Icon icon="ph:paperclip-bold" /></button>
