@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react'
 import { Icon } from '@iconify/react';
 import { socket } from '../../socket';
 import './Chat.css'
+import { BASE_URL } from '../../config';
 
 export default function Chat() {
-    const [mensajes, setMensajes] = useState([]);
+    let [mensajes, setMensajes] = useState([]);
     let [icon, setIcon] = useState([]);
     let [nombre, setNombre] = useState("Chat Común")
     let [cambia, setCambia] = useState("enviar")
     let [id, setId] = useState("")
+    let [priv, setPriv] = useState([]);
 
     useEffect(() => {
         let newIconArray = [];
@@ -27,6 +29,26 @@ export default function Chat() {
                         </article>
         setMensajes([...mensajes, article])
     })
+
+
+    function renderizarMensajes() {
+        
+        if(nombre != "Chat Común"){
+            const mensajesPrivados = priv[nombre];
+            if (mensajesPrivados) {
+                console.log("ENtrando")
+                return mensajesPrivados.map((mensaje, index) => (
+                    <div key={index}>
+                        {mensaje}
+                    </div>
+                ));
+            }
+            return null;
+        }else{
+            return mensajes
+        }
+        
+    }
 
     function verIconos() {
         document.getElementById("iconos").style.display == "flex" ? document.getElementById("iconos").style.display = "none" : document.getElementById("iconos").style.display = "flex";
@@ -57,22 +79,39 @@ export default function Chat() {
         nombreArchivo()
     }
     function subirArchivo() {
-        let fileinput = document.getElementById("fileInput");
-        let endpoint = "http://192.168.56.1:3000/upload";
-        let archivo = fileinput.files[0];
+        let fileInput = document.getElementById("fileInput");
+        let endpoint = "http://192.168.56.1:2000/upload";
+        let archivo = fileInput.files[0];
+        console.log(archivo.name)
         let form = new FormData();
         form.append("fichero", archivo);
+    
         fetch(endpoint, {
             method: 'POST',
             body: form
-        }).then(response => response.text())
-            .then(data => {
-                console.log(data)
-            }).catch((err) => {
-                console.log("ERROR")
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-
-        )
+            return response.json();
+        }).then(data => {
+            let article =   <article key={Date.now()+data.name} className='d-flex enviado'>
+                                <p>{data.name}</p>
+                                <a href="#" download={BASE_URL + "upload/" + data.name}><Icon icon="material-symbols:download-2" /></a>
+                            </article>
+            if(nombre != "Chat Común"){
+                setPriv(prevState => ({
+                    ...prevState,
+                    [nombre]: prevState[nombre] ? [...prevState[nombre], article] : [article],
+                }));
+            }else{
+                setMensajes([...mensajes, article])
+            }
+            limpiarInput();
+        }).catch((error) => {
+            console.error('Error:', error);
+            // Aquí puedes manejar los errores que ocurran durante la solicitud
+        });
     }
     function subirImagen() {
         let fileinput = document.getElementById("fileInput");
@@ -95,7 +134,6 @@ export default function Chat() {
 
     socket.on("cambioUser",(value) => {
         if(value!=null){
-            console.log(value)
             setNombre(value.nick)
             setCambia("enviarMP")
             setId(value.id)
@@ -117,12 +155,13 @@ export default function Chat() {
         }
     }
     function enviarMP(e){
-
         let envio = document.getElementById("texto").value;
         if((e.code == "Enter" || e.code == null) && envio != "" ){
-            console.log(envio)
             let article = <article key={envio + Date.now()} className='enviado'>{envio}</article>
-            setMensajes([...mensajes, article])
+            setPriv(prevState => ({
+                ...prevState,
+                [nombre]: prevState[nombre] ? [...prevState[nombre], article] : [article],
+            }));
             socket.emit('mensajePrivado', { mensaje: envio, destinatarioId: id });
 
             document.getElementById("texto").value = ""
@@ -130,9 +169,17 @@ export default function Chat() {
         }
         
     }
-    socket.on("mensajePrivado",(value) => {
-        console.log(value)
-    })
+    socket.on("mensajePrivado", (value) => {
+        console.log("HOLA")
+        let article =   <article key={value.text + Date.now()} className='recibido'>
+                            <h6>{value.user}</h6> 
+                            <p>{value.text}</p>  
+                        </article>
+        setPriv(prevState => ({
+          ...prevState,
+          [value.user]: prevState[value.user] ? [...prevState[value.user], article] : [article],
+        }));
+    });
 
     return (
         <section className='c'>
@@ -140,7 +187,7 @@ export default function Chat() {
             <section className='chat'>
             
                 <section className='chat__mensajes'>
-                    {mensajes}
+                    {renderizarMensajes()}
                 </section>
                 <div className='chat__input'>
                     <div id='iconos' className="iconos">{icon}</div>

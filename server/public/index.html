@@ -6,7 +6,6 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const socket = io();
-    socket.on("entradaUsuarios", (msg) => {console.log(msg)})
     
     window.onload = () =>{
       if(socket.nick == undefined){
@@ -56,12 +55,10 @@
     })
 
     function verIconos(){
-      console.log(document.getElementById("icon").style.display);
       document.getElementById("icon").style.display == "block"?document.getElementById("icon").style.display="none":document.getElementById("icon").style.display="block";
     }
 
     function mandarIcono(e){
-      console.log()
       let img = e.target.src
 
       socket.emit("imagen",img)

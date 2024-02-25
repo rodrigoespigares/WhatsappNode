@@ -79,8 +79,15 @@ io.on('connection', (socket) => {
         socket.on("mensajePrivado",(value) => {
             let mensaje = value.mensaje;
             let id = value.destinatarioId;
+            let mnd={
+                user:socket.nick,
+                uid:socket.uid,
+                text:mensaje
+            }
 
-            io.to(id).emit('mensajePrivado', mensaje);
+
+            console.log("Mando")
+            socket.to(id).emit('mensajePrivado', mnd);
         })
     })
 

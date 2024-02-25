@@ -62,7 +62,6 @@ let navega = useNavigate();
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
-                console.log(errorCode);
                 if(errorCode == "auth/missing-email"){
                     document.getElementById("inicioMail").classList.add("err");
                     setErrores([...errores, "Invalid email"])
