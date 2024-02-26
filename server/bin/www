@@ -28,21 +28,28 @@ const firebaseConfig = {
   
   // Accede a la instancia de Firestore
   const firestore = firebase.firestore();
-
-async function readConfigUserCollection() {
-  // Referencia a la colección "configUser"
-  const configUserCollection = firestore.collection('configUser');
-
-  // Obtener todos los documentos de la colección
-  const querySnapshot = await configUserCollection.get();
-
-  // Iterar sobre los documentos y mostrar sus datos
-  querySnapshot.forEach((doc) => {
-    console.log(`Document ID: ${doc.id}, Data: ${JSON.stringify(doc.data())}`);
-  });
-}
-
-readConfigUserCollection();
+  let userConf = [];
+  function readConfigUserCollection() {
+    const configUserCollectionURL = 'https://firestore.googleapis.com/v1/projects/whatsappnode/databases/(default)/documents/configUser';
+  
+    fetch(configUserCollectionURL)
+    .then(response => response.json())
+    .then(data => {
+        data.documents.forEach(doc => {
+        const cleanedData = {};
+        Object.keys(doc.fields).forEach(field => {
+            
+            cleanedData[field] = doc.fields[field][Object.keys(doc.fields[field])[0]];
+        });
+        userConf.push(JSON.stringify(cleanedData));
+        });
+    })
+    .catch(error => {
+        console.error('Error fetching data:', error);
+    });
+  }
+  
+  readConfigUserCollection();
 
 
 /**
@@ -91,15 +98,37 @@ grupos.push(futbol);
 io.on('connection', (socket) => {    
     
     socket.on("login",(usuario) => {
-        socket.nick = usuario.email.split("@")[0]
+        
         socket.uid = usuario.uid;
-        socket.estado = "Estoy usando WhatsApp!"
+        let usuarioEncontrado = userConf.findIndex((element) => element.uid === socket.uid);
+
+        if(usuarioEncontrado != -1){
+            socket.nick = userConf[usuarioEncontrado].nick;
+            socket.estado = userConf[usuarioEncontrado].estado;
+            socket.foto = userConf[usuarioEncontrado].foto;
+        }else{
+            socket.nick = usuario.email.split("@")[0]
+            socket.estado = "Estoy usando WhatsApp!"
+            socket.foto = BASE_URL+"images/default.webp"
+            firestore.collection('configUser').add({
+                uid: socket.uid,
+                nick: socket.nick,
+                estado: socket.estado,
+                foto: socket.foto
+            })
+            .then((docRef) => {
+                console.log('Nuevo usuario agregado con ID:', docRef.id);
+            })
+            .catch((error) => {
+                console.error('Error al agregar nuevo usuario:', error);
+            });
+        }    
         let user = {
             id: socket.id,
             nick: socket.nick,
             uid: socket.uid,
             estado: socket.estado,
-            foto: BASE_URL+"images/default.webp"
+            foto: socket.foto
         }
         usuarios.push(user)
         io.emit("newUser", usuarios);
