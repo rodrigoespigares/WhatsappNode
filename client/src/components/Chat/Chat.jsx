@@ -3,6 +3,7 @@ import { Icon } from '@iconify/react';
 import { socket } from '../../socket';
 import './Chat.css'
 import { BASE_URL } from '../../config';
+import { BASE_URL_2000 } from '../../config';
 
 export default function Chat() {
     let [mensajes, setMensajes] = useState([]);
@@ -11,6 +12,7 @@ export default function Chat() {
     let [cambia, setCambia] = useState("enviar")
     let [id, setId] = useState("")
     let [priv, setPriv] = useState([]);
+    let [fichero, setFich] = useState(true)
 
     useEffect(() => {
         let newIconArray = [];
@@ -59,12 +61,19 @@ export default function Chat() {
         document.getElementById("texto").value += e.target.innerHTML
     }
     function nombreArchivo() {
+        console.log("LLEGO")
         if (document.getElementById("fileInput").files[0] != undefined) {
             if (document.getElementById("fileInput").files[0].name != "" || document.getElementById("fileInput").files.length > 0) {
+                console.log(document.getElementById("fileInput").files[0].type)
                 let fileNameElement = document.getElementById('fileName');
                 let fileName = document.getElementById("fileInput").files[0].name;
                 document.getElementById("fichero").style.display = "flex"
                 fileNameElement.textContent = fileName;
+                if (document.getElementById("fileInput").files[0].type.startsWith('image/')) {
+                    setFich(false);
+                } else {
+                    setFich(true);
+                }
             } else {
                 document.getElementById("fichero").style.display = "none"
             }
@@ -79,7 +88,7 @@ export default function Chat() {
     }
     function subirArchivo() {
         let fileInput = document.getElementById("fileInput");
-        let endpoint = "http://192.168.56.1:2000/upload";
+        let endpoint = BASE_URL_2000 + "upload";
         let archivo = fileInput.files[0];
         let form = new FormData();
         form.append("fichero", archivo);
@@ -95,7 +104,7 @@ export default function Chat() {
         }).then(data => {
             let article =   <article key={Date.now()+data.name} className='d-flex enviado'>
                                 <p>{data.name}</p>
-                                <a href="#" download={BASE_URL + "upload/" + data.name}><Icon icon="material-symbols:download-2" /></a>
+                                <a href={BASE_URL_2000+"download?fileName=" + data.name} download><Icon icon="material-symbols:download-2" /></a>
                             </article>
             if(nombre != "Chat Común"){
                 setPriv(prevState => ({
@@ -105,30 +114,84 @@ export default function Chat() {
             }else{
                 setMensajes([...mensajes, article])
             }
+            socket.emit("archivo", data.name)
             limpiarInput();
         }).catch((error) => {
             console.error('Error:', error);
             // Aquí puedes manejar los errores que ocurran durante la solicitud
         });
     }
+    socket.on("archivo", (value) => {
+        let article =   <article key={value.text + Date.now()} className='recibido'>
+                            <h6>{value.user}</h6> 
+                            <p>{value.archivo}</p>
+                            <a href={BASE_URL_2000+"download?fileName=" + value.archivo} download><Icon icon="material-symbols:download-2" /></a>
+                        </article>
+        if(nombre != "Chat Común"){
+            if (priv[value.user] !== undefined) {
+                setPriv({ ...priv, [value.user]: [...priv[value.user], article] });
+            } else {
+                setPriv({ ...priv, [value.user]: [article] });
+            }
+        }else{
+            setMensajes([...mensajes, article])
+        }
+    })
     function subirImagen() {
-        let fileinput = document.getElementById("fileInput");
-        let endpoint = "http://192.168.56.1:3000/upload";
-        let archivo = fileinput.files[0];
+        let fileInput = document.getElementById("fileInput");
+        let endpoint = BASE_URL_2000+"upload";
+        let archivo = fileInput.files[0];
         let form = new FormData();
         form.append("fichero", archivo);
+        
         fetch(endpoint, {
             method: 'POST',
             body: form
-        }).then(response => response.text())
-            .then(data => {
-                limpiarInput();
-                // Mandar al chat imagen
-            }).catch((err) => {
-                console.log("ERROR")
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-        )
+            return response.json();
+        }).then(data => {
+            let article =   <article key={Date.now()+data.name} className='d-flex flex-column enviado'>
+                                <div className='mensaje__img'>
+                                    <img src={BASE_URL+"upload/"+data.name} alt={data.name} />
+                                </div>
+                                <a href={BASE_URL_2000+"download?fileName=" + data.name} download><Icon icon="material-symbols:download-2" /></a>
+                            </article>
+            if(nombre != "Chat Común"){
+                setPriv(prevState => ({
+                    ...prevState,
+                    [nombre]: prevState[nombre] ? [...prevState[nombre], article] : [article],
+                }));
+            }else{
+                setMensajes([...mensajes, article])
+            }
+            socket.emit("imagen", data.name)
+            limpiarInput();
+        }).catch((error) => {
+            console.error('Error:', error);
+            // Aquí puedes manejar los errores que ocurran durante la solicitud
+        });
     }
+    socket.on("imagen", (value) => {
+        let article =   <article key={value.text + Date.now()} className='d-flex flex-column recibido'>
+                            <h6>{value.user}</h6> 
+                            <div className='mensaje__img'>
+                                <img className='w-100' src={BASE_URL+"upload/"+value.imagen} alt={value.imagen} />
+                            </div>
+                            <a href={BASE_URL_2000+"download?fileName=" + value.imagen} download><Icon icon="material-symbols:download-2" /></a>
+                        </article>
+        if(nombre != "Chat Común"){
+            if (priv[value.user] !== undefined) {
+                setPriv({ ...priv, [value.user]: [...priv[value.user], article] });
+            } else {
+                setPriv({ ...priv, [value.user]: [article] });
+            }
+        }else{
+            setMensajes([...mensajes, article])
+        }
+    })
 
     socket.on("cambioUser",(value) => {
         if(value!=null){
@@ -187,7 +250,6 @@ export default function Chat() {
             if (priv[value.user] !== undefined) {
                 setPriv({ ...priv, [value.user]: [...priv[value.user], article] });
             } else {
-                
                 setPriv({ ...priv, [value.user]: [article] });
             }
         }
@@ -220,9 +282,8 @@ export default function Chat() {
                         <div className='d-flex flex-column align-items-center fichero__content'>
                             <p className='icono__grande'><Icon icon="material-symbols-light:upload-file-rounded" /></p>
                             <p id="fileName"></p>
-                            <button className='btn' onClick={subirArchivo}><Icon icon="fa:paper-plane" /></button>
+                            <button className='btn' onClick={fichero?subirArchivo:subirImagen}><Icon icon="fa:paper-plane" /></button>
                         </div>
-                        
                     </div>
 
                     <button onClick={verSubir} className='chat__input__icon'><Icon icon="ph:paperclip-bold" /></button>

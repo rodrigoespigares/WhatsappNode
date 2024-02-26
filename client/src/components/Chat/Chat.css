@@ -87,8 +87,8 @@
   background-color: #444444;
   display: none;
   flex-wrap: wrap;
-  bottom: 4.4%;
   height: 20vh;
+  bottom: 3.5rem;
   overflow-y: auto;
 }
 
@@ -108,8 +108,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  bottom: 4.4%;
-
+  bottom: 3.5rem;
   cursor: pointer;
 }
 
@@ -172,4 +171,13 @@
 
 .icono__grande {
   font-size: 10rem;
+}
+
+.mensaje__img{
+  width: 30vh;
+  height: 30vh;
+}
+.mensaje__img img{
+  width: 100%;
+  height: 100%;
 }

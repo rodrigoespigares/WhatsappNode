@@ -48,5 +48,16 @@ app.post('/upload', function(req, res) {
       res.json({ success: true, message: 'File uploaded successfully!', name: n_archivo});
   });
 });
+
+app.get('/download', (req, res) => {
+  // Obtén el nombre del archivo desde tu lógica (en este ejemplo, asumimos data.name)
+  const fileName = req.query.fileName;
+
+  // Establece el encabezado Content-Disposition para descargar el archivo
+  res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+
+  // Envía el archivo desde la carpeta 'public/upload'
+  res.sendFile(path.join(__dirname, 'public', 'upload', fileName));
+});
 app.listen(2000);
 module.exports = app;

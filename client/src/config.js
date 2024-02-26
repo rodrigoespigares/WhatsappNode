@@ -26,3 +26,4 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 export default app;
 export const BASE_URL = "http://localhost:3000/";
+export const BASE_URL_2000 = "http://localhost:2000/";

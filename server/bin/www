@@ -69,6 +69,14 @@ io.on('connection', (socket) => {
         }
         socket.broadcast.emit("imagen", mnd)
     })
+    socket.on("archivo", (file) => {
+        let mnd={
+            user:socket.nick,
+            uid:socket.uid,
+            archivo:file
+        }
+        socket.broadcast.emit("archivo", mnd)
+    })
     socket.on("usuario", (user) => {
         socket.nick = user;
     })
