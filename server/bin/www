@@ -10,6 +10,41 @@ var http = require('http');
 const cors = require('cors');
 const BASE_URL = "http://localhost:3000/";
 
+const firebaseConfig = {
+    apiKey: "AIzaSyAW6uezaGstSNL-q22838I1KjqMHwywezY",
+    authDomain: "whatsappnode.firebaseapp.com",
+    projectId: "whatsappnode",
+    storageBucket: "whatsappnode.appspot.com",
+    messagingSenderId: "747792821721",
+    appId: "1:747792821721:web:8ddbe8db6a9d342144fdc8"
+  };
+  
+  // Importa e inicializa Firebase
+  const firebase = require('firebase/app');
+  require('firebase/auth');
+  require('firebase/firestore');
+  
+  firebase.initializeApp(firebaseConfig);
+  
+  // Accede a la instancia de Firestore
+  const firestore = firebase.firestore();
+
+async function readConfigUserCollection() {
+  // Referencia a la colección "configUser"
+  const configUserCollection = firestore.collection('configUser');
+
+  // Obtener todos los documentos de la colección
+  const querySnapshot = await configUserCollection.get();
+
+  // Iterar sobre los documentos y mostrar sus datos
+  querySnapshot.forEach((doc) => {
+    console.log(`Document ID: ${doc.id}, Data: ${JSON.stringify(doc.data())}`);
+  });
+}
+
+readConfigUserCollection();
+
+
 /**
  * Get port from environment and store in Express.
  */
