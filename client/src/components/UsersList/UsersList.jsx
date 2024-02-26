@@ -33,7 +33,7 @@ export default function UsersList() {
             <article onClick={(e) => activar(e,"default")} className='d-flex align-items-center my-3 text-white usuario px-5 py-3' key={"default"}>
               <h2 className='px-3 usuario__name' style={{ pointerEvents: 'none' }}>Chat común</h2>
             </article>
-            <article onClick={(e) => activar(e,"programacion")} className='d-flex align-items-center my-3 text-white usuario px-5 py-3' key={"default"}>
+            <article onClick={(e) => activar(e,"programacion")} className='d-flex align-items-center my-3 text-white usuario px-5 py-3' key={"futbol"}>
               <h2 className='px-3 usuario__name' style={{ pointerEvents: 'none' }}>Programación</h2>
             </article>
           {usuarios.map((element) => (

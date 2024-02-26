@@ -36,7 +36,6 @@ export default function Chat() {
         if(nombre != "Chat Común"){
             const mensajesPrivados = priv[nombre];
             if (mensajesPrivados) {
-                console.log("ENtrando")
                 return mensajesPrivados.map((mensaje, index) => (
                     <div key={index}>
                         {mensaje}
@@ -82,10 +81,9 @@ export default function Chat() {
         let fileInput = document.getElementById("fileInput");
         let endpoint = "http://192.168.56.1:2000/upload";
         let archivo = fileInput.files[0];
-        console.log(archivo.name)
         let form = new FormData();
         form.append("fichero", archivo);
-    
+        
         fetch(endpoint, {
             method: 'POST',
             body: form
@@ -155,6 +153,7 @@ export default function Chat() {
         }
     }
     function enviarMP(e){
+        
         let envio = document.getElementById("texto").value;
         if((e.code == "Enter" || e.code == null) && envio != "" ){
             let article = <article key={envio + Date.now()} className='enviado'>{envio}</article>
@@ -162,6 +161,9 @@ export default function Chat() {
                 ...prevState,
                 [nombre]: prevState[nombre] ? [...prevState[nombre], article] : [article],
             }));
+            console.log(id)
+            console.log(nombre);
+            console.log(envio);
             socket.emit('mensajePrivado', { mensaje: envio, destinatarioId: id });
 
             document.getElementById("texto").value = ""
@@ -170,16 +172,26 @@ export default function Chat() {
         
     }
     socket.on("mensajePrivado", (value) => {
-        console.log("HOLA")
         let article =   <article key={value.text + Date.now()} className='recibido'>
                             <h6>{value.user}</h6> 
                             <p>{value.text}</p>  
                         </article>
-        if (priv[value.user] !== undefined) {
-            setPriv({ ...priv, [value.user]: [...priv[value.user], article] });
-        } else {
-            setPriv({ ...priv, [value.user]: [article] });
+        if(value.grupo != undefined){
+            console.log(priv)
+            if (priv[value.grupo] !== undefined) {
+                setPriv({ ...priv, [value.grupo]: [...priv[value.grupo], article] });
+            } else {
+                setPriv({ ...priv, [value.grupo]: [article] });
+            }
+        }else{
+            if (priv[value.user] !== undefined) {
+                setPriv({ ...priv, [value.user]: [...priv[value.user], article] });
+            } else {
+                
+                setPriv({ ...priv, [value.user]: [article] });
+            }
         }
+        
     });
 
     return (

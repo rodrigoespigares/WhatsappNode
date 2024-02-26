@@ -31,8 +31,26 @@ const io = new Server({
   io.listen(4000);
 
 
-var usuarios = [];
+let programacion = {
+    id: "programacion",
+    nick: "Programación",
+    uid: "programacion",
+    foto: "http://localhost:3000/images/programacion.jpg"
+}
 
+
+let futbol = {
+    id: "futbol",
+    nick: "Fútbol",
+    uid: "futbol",
+    foto: "http://localhost:3000/images/futbol.jpg"
+}
+
+var usuarios = [];
+var grupos = [];
+
+grupos.push(programacion);
+grupos.push(futbol);
 
 io.on('connection', (socket) => {    
     socket.on("mensaje", (msg) => {
@@ -74,19 +92,42 @@ io.on('connection', (socket) => {
         });
         socket.on("clickUser",(uid) => {
             let indiceUsuario = usuarios.findIndex(usuario => usuario.uid == uid);
-            socket.emit("cambioUser",usuarios[indiceUsuario])
+            if(indiceUsuario>-1){
+                socket.emit("cambioUser",usuarios[indiceUsuario])
+                socket.grupo = false
+            }else{
+                let indiceSala = grupos.findIndex(grupos => grupos.uid == uid);
+                if(indiceSala>-1){
+                    socket.emit("cambioUser",grupos[indiceSala])
+                    socket.join(grupos[indiceSala].id)
+                    socket.grupo = true;
+                    socket.nombre_grupo = grupos[indiceSala].nick
+                }else{
+                    socket.emit("cambioUser",null)
+                    socket.grupo = false
+                }
+            }
+            
         })
         socket.on("mensajePrivado",(value) => {
             let mensaje = value.mensaje;
             let id = value.destinatarioId;
-            let mnd={
-                user:socket.nick,
-                uid:socket.uid,
-                text:mensaje
+            let mnd;
+            if(socket.grupo){
+                mnd={
+                    grupo:socket.nombre_grupo,
+                    user:socket.nick,
+                    uid:socket.uid,
+                    text:mensaje
+                }
+            }else{
+                mnd={
+                    user:socket.nick,
+                    uid:socket.uid,
+                    text:mensaje
+                }
             }
 
-
-            console.log("Mando")
             socket.to(id).emit('mensajePrivado', mnd);
         })
     })

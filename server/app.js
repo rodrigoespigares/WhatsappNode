@@ -27,7 +27,7 @@ app.use(fileUpload({
 app.post('/upload', function(req, res) {
   let sampleFile;
   let uploadPath;
-
+  console.log("hola")
   if (!req.files || Object.keys(req.files).length === 0) {
       return res.status(400).json({ error: 'No files were uploaded.' });
   }
