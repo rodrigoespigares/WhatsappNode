@@ -31,26 +31,23 @@ const firebaseConfig = {
   let userConf = [];
   function readConfigUserCollection() {
     const configUserCollectionURL = 'https://firestore.googleapis.com/v1/projects/whatsappnode/databases/(default)/documents/configUser';
-  
     fetch(configUserCollectionURL)
     .then(response => response.json())
     .then(data => {
         data.documents.forEach(doc => {
         const cleanedData = {};
         Object.keys(doc.fields).forEach(field => {
-            
             cleanedData[field] = doc.fields[field][Object.keys(doc.fields[field])[0]];
         });
-        userConf.push(JSON.stringify(cleanedData));
+        userConf.push(cleanedData);
         });
     })
     .catch(error => {
         console.error('Error fetching data:', error);
     });
   }
-  
-  readConfigUserCollection();
 
+  readConfigUserCollection();
 
 /**
  * Get port from environment and store in Express.
@@ -98,10 +95,10 @@ grupos.push(futbol);
 io.on('connection', (socket) => {    
     
     socket.on("login",(usuario) => {
-        
+        readConfigUserCollection();
         socket.uid = usuario.uid;
-        let usuarioEncontrado = userConf.findIndex((element) => element.uid === socket.uid);
-
+        
+        let usuarioEncontrado = userConf.findIndex((element) => element.uid == socket.uid);
         if(usuarioEncontrado != -1){
             socket.nick = userConf[usuarioEncontrado].nick;
             socket.estado = userConf[usuarioEncontrado].estado;
@@ -132,6 +129,7 @@ io.on('connection', (socket) => {
         }
         usuarios.push(user)
         io.emit("newUser", usuarios);
+        io.emit("grupos", grupos)
         socket.on('disconnect', () => {
             let indiceUsuario = usuarios.findIndex(usuario => usuario.uid == socket.uid);
             if (indiceUsuario !== -1) {
@@ -203,6 +201,28 @@ io.on('connection', (socket) => {
             }
             socket.broadcast.emit("mensaje", mnd)
         });
+        socket.on("updateUser",(value) => {
+            const userDocRef = firestore.collection('userConf').where('uid', '==', socket.uid);
+
+            userDocRef.get()
+              .then((querySnapshot) => {
+                if (!querySnapshot.empty) {
+                  const docToUpdate = querySnapshot.docs[0];
+                  
+                  return docToUpdate.ref.update({
+                    nick: value.nick,
+                    estado: value.estado,
+                    foto: BASE_URL+"images/"+value.foto,
+                  });
+                }
+              })
+              .then(() => {
+                console.log('Datos actualizados con éxito.');
+              })
+              .catch((error) => {
+                console.error('Error al actualizar datos:', error);
+              });
+        })
     })
 
 });
