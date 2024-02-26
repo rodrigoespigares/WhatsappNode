@@ -8,6 +8,7 @@ var app = require('../app');
 var debug = require('debug')('proyectonote:server');
 var http = require('http');
 const cors = require('cors');
+const BASE_URL = "http://localhost:3000/";
 
 /**
  * Get port from environment and store in Express.
@@ -35,7 +36,7 @@ let programacion = {
     id: "programacion",
     nick: "Programación",
     uid: "programacion",
-    foto: "http://localhost:3000/images/programacion.jpg"
+    foto: BASE_URL+"images/programacion.jpg"
 }
 
 
@@ -43,7 +44,7 @@ let futbol = {
     id: "futbol",
     nick: "Fútbol",
     uid: "futbol",
-    foto: "http://localhost:3000/images/futbol.jpg"
+    foto: BASE_URL+"images/futbol.jpg"
 }
 
 var usuarios = [];
@@ -53,41 +54,17 @@ grupos.push(programacion);
 grupos.push(futbol);
 
 io.on('connection', (socket) => {    
-    socket.on("mensaje", (msg) => {
-        let mnd={
-            user:socket.nick,
-            uid:socket.uid,
-            text:msg
-        }
-        socket.broadcast.emit("mensaje", mnd)
-    })
-    socket.on("imagen", (img) => {
-        let mnd={
-            user:socket.nick,
-            uid:socket.uid,
-            imagen:img
-        }
-        socket.broadcast.emit("imagen", mnd)
-    })
-    socket.on("archivo", (file) => {
-        let mnd={
-            user:socket.nick,
-            uid:socket.uid,
-            archivo:file
-        }
-        socket.broadcast.emit("archivo", mnd)
-    })
-    socket.on("usuario", (user) => {
-        socket.nick = user;
-    })
+    
     socket.on("login",(usuario) => {
         socket.nick = usuario.email.split("@")[0]
         socket.uid = usuario.uid;
+        socket.estado = "Estoy usando WhatsApp!"
         let user = {
             id: socket.id,
             nick: socket.nick,
             uid: socket.uid,
-            foto: "http://localhost:3000/images/default.webp"
+            estado: socket.estado,
+            foto: BASE_URL+"images/default.webp"
         }
         usuarios.push(user)
         io.emit("newUser", usuarios);
@@ -137,7 +114,31 @@ io.on('connection', (socket) => {
             }
 
             socket.to(id).emit('mensajePrivado', mnd);
-        })
+        });
+        socket.on("imagen", (img) => {
+            let mnd={
+                user:socket.nick,
+                uid:socket.uid,
+                imagen:img
+            }
+            socket.broadcast.emit("imagen", mnd)
+        });
+        socket.on("archivo", (file) => {
+            let mnd={
+                user:socket.nick,
+                uid:socket.uid,
+                archivo:file
+            }
+            socket.broadcast.emit("archivo", mnd)
+        });
+        socket.on("mensaje", (msg) => {
+            let mnd={
+                user:socket.nick,
+                uid:socket.uid,
+                text:msg
+            }
+            socket.broadcast.emit("mensaje", mnd)
+        });
     })
 
 });

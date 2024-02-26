@@ -1,6 +1,7 @@
 .lista{
-    width: 25vw;
-    max-height: 100vh;
+    width: 100%;
+    height: 90vh;
+    max-height: 90vh;
     overflow-y: auto;
     background-color: #111B21;
 }

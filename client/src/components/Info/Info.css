@@ -1,0 +1,15 @@
+.user{
+    min-height: 10vh;
+    background-color: #111B21;
+    color: white;
+}
+.user__foto{
+    width: 2.5vw;
+}
+.user__foto img{
+    width: 100%;
+    border-radius: 51%;
+}
+.user__control button{
+    color: white !important;
+}

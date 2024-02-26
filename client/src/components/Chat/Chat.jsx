@@ -61,10 +61,8 @@ export default function Chat() {
         document.getElementById("texto").value += e.target.innerHTML
     }
     function nombreArchivo() {
-        console.log("LLEGO")
         if (document.getElementById("fileInput").files[0] != undefined) {
             if (document.getElementById("fileInput").files[0].name != "" || document.getElementById("fileInput").files.length > 0) {
-                console.log(document.getElementById("fileInput").files[0].type)
                 let fileNameElement = document.getElementById('fileName');
                 let fileName = document.getElementById("fileInput").files[0].name;
                 document.getElementById("fichero").style.display = "flex"
@@ -224,9 +222,6 @@ export default function Chat() {
                 ...prevState,
                 [nombre]: prevState[nombre] ? [...prevState[nombre], article] : [article],
             }));
-            console.log(id)
-            console.log(nombre);
-            console.log(envio);
             socket.emit('mensajePrivado', { mensaje: envio, destinatarioId: id });
 
             document.getElementById("texto").value = ""
@@ -240,7 +235,6 @@ export default function Chat() {
                             <p>{value.text}</p>  
                         </article>
         if(value.grupo != undefined){
-            console.log(priv)
             if (priv[value.grupo] !== undefined) {
                 setPriv({ ...priv, [value.grupo]: [...priv[value.grupo], article] });
             } else {
