@@ -27,17 +27,18 @@ app.use(fileUpload({
 app.post('/upload', function(req, res) {
   let sampleFile;
   let uploadPath;
+  
   if (!req.files || Object.keys(req.files).length === 0) {
       return res.status(400).json({ error: 'No files were uploaded.' });
   }
-
+  
   // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
   sampleFile = req.files.fichero;
     const utf8FileName = iconv.decode(iconv.encode(sampleFile.name, 'ISO-8859-1'), 'UTF-8');
 
     let n_archivo = Date.now() + "_" + utf8FileName.replace(/\s+/g, '_');
-  uploadPath = __dirname + '/public/upload/' + n_archivo;
-
+  uploadPath = path.join(__dirname, 'public', 'upload', n_archivo);
+  
   // Use the mv() method to place the file somewhere on your server
   sampleFile.mv(uploadPath, function(err) {
       if (err)
@@ -58,5 +59,4 @@ app.get('/download', (req, res) => {
   // Envía el archivo desde la carpeta 'public/upload'
   res.sendFile(path.join(__dirname, 'public', 'upload', fileName));
 });
-app.listen(2000);
 module.exports = app;

@@ -249,6 +249,30 @@ export default function Chat() {
         }
         
     });
+    socket.on("conectado", (value) => {
+        let article = <div className='d-flex justify-content-center w-100'> <article key={value.uid+Date.now()} className='conect my-2'>{value.nick} se ha unido al chat</article> </div>
+        if(nombre != "Chat Común"){
+            if (priv[value.user] !== undefined) {
+                setPriv({ ...priv, [value.user]: [...priv[value.user], article] });
+            } else {
+                setPriv({ ...priv, [value.user]: [article] });
+            }
+        }else{
+            setMensajes([...mensajes, article])
+        }
+    })
+    socket.on("desconectado", (value) => {
+        let article = <div key={"div"+value.uid+Date.now()} className='d-flex justify-content-center w-100'> <article key={value.uid+Date.now()} className='conect my-2'>{value.nick} ha salido del chat</article> </div>
+        if(nombre != "Chat Común"){
+            if (priv[value.user] !== undefined) {
+                setPriv({ ...priv, [value.user]: [...priv[value.user], article] });
+            } else {
+                setPriv({ ...priv, [value.user]: [article] });
+            }
+        }else{
+            setMensajes([...mensajes, article])
+        }
+    })
 
     return (
         <section className='c'>

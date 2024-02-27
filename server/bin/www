@@ -62,14 +62,14 @@ app.use(cors());
  */
 
 var server = http.createServer(app);
-const io = new Server(server);
-/* const io = new Server({
+// const io = new Server(server);
+ const io = new Server({
     cors: {
       origin: "http://localhost:5173"
     }
   });
   
-  io.listen(4000); */
+  io.listen(4000); 
 
 
 let programacion = {
@@ -103,7 +103,7 @@ io.on('connection', (socket) => {
         if(usuarioEncontrado != -1){
             socket.nick = userConf[usuarioEncontrado].nick;
             socket.estado = userConf[usuarioEncontrado].estado;
-            socket.foto = userConf[usuarioEncontrado].foto;
+            socket.foto = BASE_URL+userConf[usuarioEncontrado].foto;
         }else{
             socket.nick = usuario.email.split("@")[0]
             socket.estado = "Estoy usando WhatsApp!"
@@ -112,7 +112,7 @@ io.on('connection', (socket) => {
                 uid: socket.uid,
                 nick: socket.nick,
                 estado: socket.estado,
-                foto: socket.foto
+                foto: "images/default.webp"
             })
             .then((docRef) => {
                 console.log('Nuevo usuario agregado con ID:', docRef.id);
@@ -130,13 +130,15 @@ io.on('connection', (socket) => {
         }
         usuarios.push(user)
         io.emit("newUser", usuarios);
-        io.emit("grupos", grupos)
+        io.emit("grupos", grupos);
+        io.emit("conectado", user);
         socket.on('disconnect', () => {
             let indiceUsuario = usuarios.findIndex(usuario => usuario.uid == socket.uid);
             if (indiceUsuario !== -1) {
                 usuarios.splice(indiceUsuario, 1);
             }
             io.emit("newUser", usuarios);
+            socket.broadcast.emit("desconectado", user);
         });
         socket.on("clickUser",(uid) => {
             let indiceUsuario = usuarios.findIndex(usuario => usuario.uid == uid);
