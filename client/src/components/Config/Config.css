@@ -1,0 +1,43 @@
+#root{
+    position: relative;
+}
+.configuracion{
+    display: block;
+    top: 20%;
+    left: 40%;
+    background-color: #111B21;
+    padding: 3rem 5rem;
+    border-radius: 2rem;
+    color: white;
+    z-index: 100;
+}
+.configuracion__activo ~ .users__confi{
+    pointer-events: none;
+}
+.configuracion__activo ~ .c{
+    pointer-events: none;
+}
+.config__header .btn{
+    color: white !important;
+}
+.configuracion__info{
+    display: flex;
+    gap: 3rem;
+}
+.configuracion__info__user__info{
+    display: flex;
+    flex-direction: column;
+    background-color: red;
+}
+.configuracion__info__user__info button{
+    margin-top: auto;
+    margin-left: auto;
+}
+.galery__option__perfil{
+    width: 2vw;
+    height: 2vw;
+}
+.galery__option__perfil img{
+    width: 100%;
+    height: 100%;
+}

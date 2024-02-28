@@ -4,6 +4,7 @@ import { socket } from '../../socket';
 import './Chat.css'
 import { BASE_URL } from '../../config';
 import { BASE_URL_2000 } from '../../config';
+import Config from '../Config/Config';
 
 export default function Chat() {
     let [mensajes, setMensajes] = useState([]);
@@ -25,7 +26,7 @@ export default function Chat() {
         setIcon(newIconArray);
         return () => {
             clearTimeout(escribiendoTime.current);
-          };
+        };
     }, []);
     socket.on("mensaje", (value) => {
         let article =   <article key={value.text + Date.now()} className='recibido my-2'>
@@ -276,44 +277,46 @@ export default function Chat() {
        
     })
     return (
-        <section className='c'>
-            <h2 className='text-white'>{nombre}</h2>
-            <section className='chat'>
-            
-                <section className='chat__mensajes'>
-                    {renderizarMensajes()}
+        <>
+            <section className='c'>
+                <h2 className='text-white'>{nombre}</h2>
+                <section className='chat'>
+                
+                    <section className='chat__mensajes'>
+                        {renderizarMensajes()}
+                    </section>
+                    <div className='px-4' style={{ display: (userWriting.length>0 && nombre == "Chat Común") ? 'block' : 'none' }}>
+                        <p className='text-white'>{userWriting.join(', ')} está escribiendo...</p>
+                    </div>
+                    <div className='chat__input'>
+                        <div id='iconos' className="iconos">{icon}</div>
+                        <button onClick={verIconos} className='chat__input__icon'><Icon icon="mingcute:emoji-fill" /></button>
+                        <div id='archivo' className="subirArchivo">
+                            <div className="archivos">
+                                <input onChange={nombreArchivo} type="file" id="fileInput" name='archivoCompartido' />
+                                <label htmlFor="fileInput" className='chat__input__icon__color archivo'><Icon icon="material-symbols-light:upload-file-rounded" /><span> un archivo</span></label>
+                            </div>
+                            <div className="archivos">
+                                <input onChange={nombreArchivo} type="file" id="imgInput" name='imagenCompartido' accept="image/*"/>
+                                <label htmlFor="imgInput" className='chat__input__icon__color foto'><Icon icon="material-symbols-light:photo-camera" /><span> una imagen</span></label>
+                            </div>
+                        </div>
+                        <div id='fichero' className='text-white'>
+                            <button className='btn fs-1' onClick={limpiarInput}><Icon icon="material-symbols:close" /></button>
+                            <div className='d-flex flex-column align-items-center fichero__content'>
+                                <p className='icono__grande'><Icon icon="material-symbols-light:upload-file-rounded" /></p>
+                                <p id="fileName"></p>
+                                <button className='btn' onClick={fichero?subirArchivo:subirImagen}><Icon icon="fa:paper-plane" /></button>
+                            </div>
+                        </div>
+
+                        <button onClick={verSubir} className='chat__input__icon'><Icon icon="ph:paperclip-bold" /></button>
+                        <input onKeyUp={enviar} type="text" name="" id="texto" />
+                        <button onClick={enviar} className='chat__input__icon'><Icon icon="fa:paper-plane" /></button>
+                    </div>
                 </section>
-                <div className='px-4' style={{ display: (userWriting.length>0 && nombre == "Chat Común") ? 'block' : 'none' }}>
-                    <p className='text-white'>{userWriting.join(', ')} está escribiendo...</p>
-                </div>
-                <div className='chat__input'>
-                    <div id='iconos' className="iconos">{icon}</div>
-                    <button onClick={verIconos} className='chat__input__icon'><Icon icon="mingcute:emoji-fill" /></button>
-                    <div id='archivo' className="subirArchivo">
-                        <div className="archivos">
-                            <input onChange={nombreArchivo} type="file" id="fileInput" name='archivoCompartido' />
-                            <label htmlFor="fileInput" className='chat__input__icon__color archivo'><Icon icon="material-symbols-light:upload-file-rounded" /><span> un archivo</span></label>
-                        </div>
-                        <div className="archivos">
-                            <input onChange={nombreArchivo} type="file" id="imgInput" name='imagenCompartido' accept="image/*"/>
-                            <label htmlFor="imgInput" className='chat__input__icon__color foto'><Icon icon="material-symbols-light:photo-camera" /><span> una imagen</span></label>
-                        </div>
-                    </div>
-                    <div id='fichero' className='text-white'>
-                        <button className='btn fs-1' onClick={limpiarInput}><Icon icon="material-symbols:close" /></button>
-                        <div className='d-flex flex-column align-items-center fichero__content'>
-                            <p className='icono__grande'><Icon icon="material-symbols-light:upload-file-rounded" /></p>
-                            <p id="fileName"></p>
-                            <button className='btn' onClick={fichero?subirArchivo:subirImagen}><Icon icon="fa:paper-plane" /></button>
-                        </div>
-                    </div>
-
-                    <button onClick={verSubir} className='chat__input__icon'><Icon icon="ph:paperclip-bold" /></button>
-                    <input onKeyUp={enviar} type="text" name="" id="texto" />
-                    <button onClick={enviar} className='chat__input__icon'><Icon icon="fa:paper-plane" /></button>
-                </div>
             </section>
-
-        </section>
+            <Config></Config>
+        </>
     )
 }

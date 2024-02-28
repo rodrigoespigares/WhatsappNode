@@ -25,5 +25,5 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export default app;
-export const BASE_URL = document.location.origin+"/";
+export const BASE_URL = "http://localhost:3000"+"/";
 export const BASE_URL_2000 = document.location.origin+"/";

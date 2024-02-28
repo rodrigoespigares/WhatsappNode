@@ -163,8 +163,7 @@ io.on('connection', (socket) => {
                     socket.grupo = false
                 }
             }
-            
-        })
+        })        
         socket.on("mensajePrivado",(value) => {
             let mensaje = value.mensaje;
             console.log(value.destinatarioId)

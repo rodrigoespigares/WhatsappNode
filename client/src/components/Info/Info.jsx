@@ -42,11 +42,15 @@ export default function Info() {
       });
   }
 
+  function showConfig(){
+      socket.emit("verConfig", true)
+  }
+
   let login = '';
   if (usuario) {
     login = (
       <div className='user__control'>
-        <button onClick={cerrarSesion} className='btn fs-3'>
+        <button onClick={showConfig} className='btn fs-3'>
           <Icon icon='mynaui:config-vertical' />
         </button>
         <button onClick={cerrarSesion} className='btn fs-3'>

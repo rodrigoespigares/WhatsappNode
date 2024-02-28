@@ -12,7 +12,6 @@ const Midware = ({ Component }) => {
   useEffect(() => {
 
     onAuthStateChanged(auth, (user) => {
-      socket.emit("login", user)
       setIsAuth(!!user);
       setIsLoading(false);
     });
