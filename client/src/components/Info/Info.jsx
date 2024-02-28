@@ -31,6 +31,10 @@ export default function Info() {
     };
   }, []);
 
+  socket.on('disconnect',() => {
+    cerrarSesion();
+  })
+
   function cerrarSesion() {
     const auth = getAuth();
     signOut(auth)
