@@ -285,7 +285,7 @@ export default function Chat() {
                     <section className='chat__mensajes'>
                         {renderizarMensajes()}
                     </section>
-                    <div className='px-4' style={{ display: (userWriting.length>0 && nombre == "Chat Común") ? 'block' : 'none' }}>
+                    <div className='px-4 chat__escribiendo' style={{ display: (userWriting.length>0 && nombre == "Chat Común") ? 'block' : 'none' }}>
                         <p className='text-white'>{userWriting.join(', ')} está escribiendo...</p>
                     </div>
                     <div className='chat__input'>

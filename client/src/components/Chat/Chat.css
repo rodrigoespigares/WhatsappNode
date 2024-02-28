@@ -12,6 +12,11 @@
   height: 100%;
   justify-content: end;
 }
+.chat__escribiendo{
+  background-color: #202C33;
+  height: 1rem;
+  font-size: .7rem;
+}
 .chat__mensajes{
   max-height: 85vh;
   overflow-y: auto;

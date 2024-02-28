@@ -7,7 +7,9 @@ import { Icon } from '@iconify/react';
 import { BASE_URL } from '../../config';
 
 export default function Config() {
-    const [usuario, setUsuario] = useState(null);
+    let [usuario, setUsuario] = useState(null);
+    let [tempIMG, setTemp] = useState("");
+    
 
     socket.on("conectado", (value) => {
         setUsuario(value);
@@ -18,7 +20,7 @@ export default function Config() {
         info = <section className='configuracion__info'>
                 <div>
                     <div className='configuracion__info__user__foto'>
-                        <img src={usuario.foto} alt='' />
+                        <img src={tempIMG==''?usuario.foto:tempIMG} alt='' />
                     </div>
                     <div className='d-flex justify-content-between mt-2'>
                         <div className='galery__option__perfil'><img src={BASE_URL+"images/muestra1.jpg"} alt="" /></div>
@@ -26,19 +28,27 @@ export default function Config() {
                         <div className='galery__option__perfil'><img src={BASE_URL+"images/muestra3.jpg"} alt="" /></div>
                         <div className='galery__option__perfil'><img src={BASE_URL+"images/muestra4.jpg"} alt="" /></div>
                         <div className='galery__option__perfil'><img src={BASE_URL+"images/muestra5.jpg"} alt="" /></div>
-                        <button>AÑADIR</button>
+                        <div className='contenedor'>
+                            <div className="add_file">
+                                <input  type="file" id="imgInput" name='imagenCompartido' accept="image/*"/>
+                                <label htmlFor="imgInput" className='btn fs-4'><Icon icon="material-symbols:add"/></label>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div className='configuracion__info__user__info'>
-                    <div className='d-flex'>
-                        <h2 className='fs-4'>{usuario.nick}</h2>
-                        <button>edit</button>
+                    <h3>Nombre de usuario:</h3>
+                    <div className='d-flex mb-5'>
+                        <p>{usuario.nick}</p>
+                        <button className='btn'><Icon icon="material-symbols:edit" /></button>
                     </div>
+                    <h3>Estado:</h3>
                     <div className='d-flex'>
+                        
                         <p>{usuario.estado}</p>
-                        <button>edit</button>
+                        <button className='btn'><Icon icon="material-symbols:edit" /></button>
                     </div>
-                    <button>Save</button>
+                    <button className='btn fs-3'><Icon icon="mynaui:save" /></button>
                 </div>
                 
             </section>
