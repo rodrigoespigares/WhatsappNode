@@ -152,6 +152,12 @@ io.on('connection', (socket) => {
                     socket.join(grupos[indiceSala].id)
                     socket.grupo = true;
                     socket.nombre_grupo = grupos[indiceSala].nick
+                    let mnd = {
+                        user: user,
+                        grupo: socket.nombre_grupo
+                    }
+
+                    socket.to(grupos[indiceSala].id).emit("conectGrupo",mnd)
                 }else{
                     socket.emit("cambioUser",null)
                     socket.grupo = false
@@ -161,6 +167,7 @@ io.on('connection', (socket) => {
         })
         socket.on("mensajePrivado",(value) => {
             let mensaje = value.mensaje;
+            console.log(value.destinatarioId)
             let id = value.destinatarioId;
             let mnd;
             if(socket.grupo){
@@ -180,6 +187,13 @@ io.on('connection', (socket) => {
 
             socket.to(id).emit('mensajePrivado', mnd);
         });
+        socket.on("escribiendo", (value) => {
+            let mnd = {
+                if: value,
+                user: user
+            }
+            io.emit("escribiendo", mnd)
+        })
         socket.on("imagen", (img) => {
             let mnd={
                 user:socket.nick,

@@ -9,6 +9,7 @@ import Error from './components/Error/Error';
 import Login from './components/Login/Login';
 import InChat from './views/InChat/InChat';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Midware from './utils/Midware';
 
 export default function App() {
   const [isConnected, setIsConnected] = useState(socket.connected);
@@ -50,7 +51,7 @@ export default function App() {
         },
         {
           path: "/chat",
-          element: <InChat></InChat>
+          element: <Midware Component={InChat}></Midware>
         },
         {
           path: "*",

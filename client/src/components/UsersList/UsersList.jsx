@@ -12,7 +12,6 @@ export default function UsersList() {
         setUsuarios(value);
       });
       socket.on("grupos", (value) => {
-        console.log(value)
         setGrupos(value);
       })
   

@@ -23,7 +23,13 @@
   padding: 1rem;
   margin-left: auto;
   width: max-content;
-
+  max-width: 50vw;
+}
+.enviado p {
+  width: 100%;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .recibido {
@@ -32,6 +38,7 @@
   border-radius: 1rem;
   padding: .2rem 1rem;
   width: max-content;
+  max-width: 50vw;
 }
 
 .recibido h6 {
@@ -39,7 +46,10 @@
 }
 
 .recibido p {
-  height: 10px;
+  width: 100%;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .chat__input {

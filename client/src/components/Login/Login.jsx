@@ -14,12 +14,12 @@ import { auth } from '../../config';
 import { Icon } from '@iconify/react';
 import './Login.css';
 import {useNavigate} from 'react-router-dom'
-
-export default function Login() {
 let emailRegistro = "";
 let emailInicio = "";
 let passInicio = "";
 let passRegistro = "";
+export default function Login() {
+
 let [errores, setErrores] = useState([]);
 
 let navega = useNavigate();
@@ -79,12 +79,13 @@ let navega = useNavigate();
     }
 
     function registroCorreo() {
-        
+        console.log(emailRegistro)
         createUserWithEmailAndPassword(auth, emailRegistro, passRegistro)
             .then((userCredential) => {
                 // Signed up 
                 const user = userCredential.user;
                 // ...
+                socket.emit("login",user);
                 navega('/chat');
             })
             .catch((error) => {
@@ -194,6 +195,7 @@ let navega = useNavigate();
                     <input type="text" placeholder="Name" />
                     <input id='registroMail' type="email" placeholder="Email" onChange={(e) => {
                       emailRegistro = e.target.value;
+                      console.log(emailRegistro)
                       setErrores([])
                       document.getElementById("registroMail").classList.remove("err")
                     }}/>

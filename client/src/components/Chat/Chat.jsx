@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Icon } from '@iconify/react';
 import { socket } from '../../socket';
 import './Chat.css'
@@ -13,6 +13,8 @@ export default function Chat() {
     let [id, setId] = useState("")
     let [priv, setPriv] = useState([]);
     let [fichero, setFich] = useState(true)
+    let [userWriting,setUserWriting] = useState([])
+    let escribiendoTime = useRef(null);
 
     useEffect(() => {
         let newIconArray = [];
@@ -21,18 +23,17 @@ export default function Chat() {
             newIconArray.push(<button onClick={clickIcon} className='icon--img' key={index} dangerouslySetInnerHTML={{ __html: etiqueta }}></button>);
         }
         setIcon(newIconArray);
+        return () => {
+            clearTimeout(escribiendoTime.current);
+          };
     }, []);
-    
-
     socket.on("mensaje", (value) => {
-        let article =   <article key={value.text + Date.now()} className='recibido'>
+        let article =   <article key={value.text + Date.now()} className='recibido my-2'>
                             <h6>{value.user}</h6> 
                             <p>{value.text}</p>  
                         </article>
         setMensajes([...mensajes, article])
     })
-
-
     function renderizarMensajes() {
         
         if(nombre != "Chat Común"){
@@ -50,7 +51,6 @@ export default function Chat() {
         }
         
     }
-
     function verIconos() {
         document.getElementById("iconos").style.display == "flex" ? document.getElementById("iconos").style.display = "none" : document.getElementById("iconos").style.display = "flex";
     }
@@ -100,7 +100,7 @@ export default function Chat() {
             }
             return response.json();
         }).then(data => {
-            let article =   <article key={Date.now()+data.name} className='d-flex enviado'>
+            let article =   <article key={Date.now()+data.name} className='d-flex enviado my-2'>
                                 <p>{data.name}</p>
                                 <a href={BASE_URL_2000+"download?fileName=" + data.name} download><Icon icon="material-symbols:download-2" /></a>
                             </article>
@@ -120,7 +120,7 @@ export default function Chat() {
         });
     }
     socket.on("archivo", (value) => {
-        let article =   <article key={value.text + Date.now()} className='recibido'>
+        let article =   <article key={value.text + Date.now()} className='recibido my-2'>
                             <h6>{value.user}</h6> 
                             <p>{value.archivo}</p>
                             <a href={BASE_URL_2000+"download?fileName=" + value.archivo} download><Icon icon="material-symbols:download-2" /></a>
@@ -151,7 +151,7 @@ export default function Chat() {
             }
             return response.json();
         }).then(data => {
-            let article =   <article key={Date.now()+data.name} className='d-flex flex-column enviado'>
+            let article =   <article key={Date.now()+data.name} className='d-flex flex-column enviado my-2'>
                                 <div className='mensaje__img'>
                                     <img src={BASE_URL+"upload/"+data.name} alt={data.name} />
                                 </div>
@@ -173,7 +173,7 @@ export default function Chat() {
         });
     }
     socket.on("imagen", (value) => {
-        let article =   <article key={value.text + Date.now()} className='d-flex flex-column recibido'>
+        let article =   <article key={value.text + Date.now()} className='d-flex flex-column recibido my-2'>
                             <h6>{value.user}</h6> 
                             <div className='mensaje__img'>
                                 <img className='w-100' src={BASE_URL+"upload/"+value.imagen} alt={value.imagen} />
@@ -190,7 +190,6 @@ export default function Chat() {
             setMensajes([...mensajes, article])
         }
     })
-
     socket.on("cambioUser",(value) => {
         if(value!=null){
             setNombre(value.nick)
@@ -202,35 +201,44 @@ export default function Chat() {
         }
     })
     function enviar(e) {
+        if(nombre == "Chat Común"){
+            clearTimeout(escribiendoTime.current);
+            escribiendoTime.current = setTimeout(() => {
+                socket.emit("escribiendo", false);
+            }, 3000);
+        }
         let envio = document.getElementById("texto").value;
         if((e.code == "Enter" || e.code == null) && envio != "" ){
-            
-            let article = <article key={envio + Date.now()} className='enviado'>{envio}</article>
-            setMensajes([...mensajes, article])
-            socket.emit("mensaje", envio)
-
+            let article = <article key={envio + Date.now()} className='enviado my-2'><p>{envio}</p></article>
+            if(nombre=="Chat Común"){
+                setMensajes([...mensajes, article])
+                socket.emit("mensaje", envio)
+            }else{
+                setPriv(prevState => ({
+                    ...prevState,
+                    [nombre]: prevState[nombre] ? [...prevState[nombre], article] : [article],
+                }));
+                socket.emit('mensajePrivado', { mensaje: envio, destinatarioId: id });
+            }
             document.getElementById("texto").value = ""
             document.getElementById("iconos").style.display = "none"
+            if(nombre == "Chat Común"){
+                socket.emit("escribiendo", false);
+            }
+        }else if(nombre == "Chat Común"){
+            socket.emit("escribiendo", true);
         }
     }
-    function enviarMP(e){
+    socket.on("escribiendo", (value) => {
         
-        let envio = document.getElementById("texto").value;
-        if((e.code == "Enter" || e.code == null) && envio != "" ){
-            let article = <article key={envio + Date.now()} className='enviado'>{envio}</article>
-            setPriv(prevState => ({
-                ...prevState,
-                [nombre]: prevState[nombre] ? [...prevState[nombre], article] : [article],
-            }));
-            socket.emit('mensajePrivado', { mensaje: envio, destinatarioId: id });
-
-            document.getElementById("texto").value = ""
-            document.getElementById("iconos").style.display = "none"
+        if(value.if && !userWriting.includes(value.user.nick)){
+            setUserWriting([...userWriting,value.user.nick])
+        }else if(!value.if){
+            setUserWriting(prevUserWriting => prevUserWriting.filter(nick => nick !== value.user.nick));  
         }
-        
-    }
+    })
     socket.on("mensajePrivado", (value) => {
-        let article =   <article key={value.text + Date.now()} className='recibido'>
+        let article =   <article key={value.text + Date.now()} className='recibido my-2'>
                             <h6>{value.user}</h6> 
                             <p>{value.text}</p>  
                         </article>
@@ -250,30 +258,23 @@ export default function Chat() {
         
     });
     socket.on("conectado", (value) => {
-        let article = <div className='d-flex justify-content-center w-100'> <article key={value.uid+Date.now()} className='conect my-2'>{value.nick} se ha unido al chat</article> </div>
-        if(nombre != "Chat Común"){
-            if (priv[value.user] !== undefined) {
-                setPriv({ ...priv, [value.user]: [...priv[value.user], article] });
-            } else {
-                setPriv({ ...priv, [value.user]: [article] });
-            }
-        }else{
-            setMensajes([...mensajes, article])
-        }
+        let article = <div key={"div"+value.uid+Date.now()} className='d-flex justify-content-center w-100'> <article key={value.uid+Date.now()} className='conect my-2'>{value.nick} se ha unido al chat</article> </div>
+        setMensajes([...mensajes, article])
     })
     socket.on("desconectado", (value) => {
         let article = <div key={"div"+value.uid+Date.now()} className='d-flex justify-content-center w-100'> <article key={value.uid+Date.now()} className='conect my-2'>{value.nick} ha salido del chat</article> </div>
-        if(nombre != "Chat Común"){
-            if (priv[value.user] !== undefined) {
-                setPriv({ ...priv, [value.user]: [...priv[value.user], article] });
-            } else {
-                setPriv({ ...priv, [value.user]: [article] });
-            }
-        }else{
-            setMensajes([...mensajes, article])
-        }
+        setMensajes([...mensajes, article])
     })
-
+    socket.on("conectGrupo", (value) => {
+        let article = <div key={"div"+value.user.uid+Date.now()} className='d-flex justify-content-center w-100'> <article key={value.user.uid+Date.now()} className='conect my-2'>{value.user.nick} se ha unido al chat</article> </div>
+        
+        if (priv[value.grupo] !== undefined) {
+            setPriv({ ...priv, [value.grupo]: [...priv[value.grupo], article] });
+        } else {
+            setPriv({ ...priv, [value.grupo]: [article] });
+        }
+       
+    })
     return (
         <section className='c'>
             <h2 className='text-white'>{nombre}</h2>
@@ -282,6 +283,9 @@ export default function Chat() {
                 <section className='chat__mensajes'>
                     {renderizarMensajes()}
                 </section>
+                <div className='px-4' style={{ display: (userWriting.length>0 && nombre == "Chat Común") ? 'block' : 'none' }}>
+                    <p className='text-white'>{userWriting.join(', ')} está escribiendo...</p>
+                </div>
                 <div className='chat__input'>
                     <div id='iconos' className="iconos">{icon}</div>
                     <button onClick={verIconos} className='chat__input__icon'><Icon icon="mingcute:emoji-fill" /></button>
@@ -305,8 +309,8 @@ export default function Chat() {
                     </div>
 
                     <button onClick={verSubir} className='chat__input__icon'><Icon icon="ph:paperclip-bold" /></button>
-                    <input onKeyUp={cambia === "enviar" ? enviar : enviarMP} type="text" name="" id="texto" />
-                    <button onClick={cambia === "enviar" ? enviar : enviarMP} className='chat__input__icon'><Icon icon="fa:paper-plane" /></button>
+                    <input onKeyUp={enviar} type="text" name="" id="texto" />
+                    <button onClick={enviar} className='chat__input__icon'><Icon icon="fa:paper-plane" /></button>
                 </div>
             </section>
 
