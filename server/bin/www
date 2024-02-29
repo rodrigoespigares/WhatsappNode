@@ -8,7 +8,7 @@ var app = require('../app');
 var debug = require('debug')('proyectonote:server');
 var http = require('http');
 const cors = require('cors');
-const BASE_URL = process.env.RENDER_EXTERNAL_URL || "http://192.168.1.90:3000/";
+const BASE_URL = process.env.RENDER_EXTERNAL_URL+"/" || "http://192.168.1.90:3000/";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAW6uezaGstSNL-q22838I1KjqMHwywezY",
