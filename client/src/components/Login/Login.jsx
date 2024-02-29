@@ -14,6 +14,9 @@ import { auth } from '../../config';
 import { Icon } from '@iconify/react';
 import './Login.css';
 import {useNavigate} from 'react-router-dom'
+import lang from './lang/es.js'
+
+
 let emailRegistro = "";
 let emailInicio = "";
 let passInicio = "";
@@ -57,7 +60,9 @@ let navega = useNavigate();
                 // Signed in 
                 const user = userCredential.user;
                 // ...
-                
+                socket.emit("login",user);
+                navega('/chat');
+
             })
             .catch((error) => {
                 const errorCode = error.code;
@@ -117,6 +122,7 @@ let navega = useNavigate();
     
             // The signed-in user info.
             const user = result.user;
+            socket.emit("login",user);
             navega('/chat');
         }).catch((error) => {
             // Handle Errors here.
@@ -144,6 +150,7 @@ let navega = useNavigate();
     
             // IdP data available using getAdditionalUserInfo(result)
             // ...
+            socket.emit("login",user);
             navega('/chat');
         })
         .catch((error) => {
@@ -179,37 +186,7 @@ let navega = useNavigate();
         <div className="container" id="container">
             <div className="form-container sign-up-container">
                 <div className="form">
-                    <h1>Create a count</h1>
-                    <div className="social-container">
-                        <button onClick={iniciaSesionGoogle} type="button" className="social">
-                            <Icon icon="mingcute:google-fill" />
-                        </button>
-                        <button onClick={iniciaSesionFacebook} type="button" className="social">
-                            <Icon icon="bxl:facebook" />
-                        </button>
-                        <button onClick={iniciaSesionGitHub} type="button" className="social">
-                            <Icon icon="fluent-mdl2:git-hub-logo" />
-                        </button>
-                    </div>
-                    <span>or use an email to register</span>
-                    <input type="text" placeholder="Name" />
-                    <input id='registroMail' type="email" placeholder="Email" onChange={(e) => {
-                      emailRegistro = e.target.value;
-                      console.log(emailRegistro)
-                      setErrores([])
-                      document.getElementById("registroMail").classList.remove("err")
-                    }}/>
-                    <input id='registroPass' type="password" placeholder="Password" onChange={(e) => {
-                      passRegistro = e.target.value;
-                      setErrores([])
-                      document.getElementById("registroPass").classList.remove("err")
-                    }}/>
-                    <button onClick={registroCorreo} className="buttons">Sign up</button>
-                </div>
-            </div>
-            <div className="form-container sign-in-container">
-                <div className="form">
-                    <h1>Log in</h1>
+                    <h1>{lang.register.title}</h1>
                     <div className='alert alert-danger' hidden={!errores.length>0}>
                         <h2>Error</h2>
                         {errores}
@@ -225,33 +202,67 @@ let navega = useNavigate();
                             <Icon icon="fluent-mdl2:git-hub-logo" />
                         </button>
                     </div>
-                    <span>or use your account</span>
-                    <input id='inicioMail' type="email" placeholder="Email" onChange={(e) => {
+                    <span>{lang.register.subtitle}</span>
+                    <input type="text" placeholder={lang.register.input.name} />
+                    <input id='registroMail' type="email" placeholder={lang.register.input.mail} onChange={(e) => {
+                      emailRegistro = e.target.value;
+                      console.log(emailRegistro)
+                      setErrores([])
+                      document.getElementById("registroMail").classList.remove("err")
+                    }}/>
+                    <input id='registroPass' type="password" placeholder={lang.register.input.pass} onChange={(e) => {
+                      passRegistro = e.target.value;
+                      setErrores([])
+                      document.getElementById("registroPass").classList.remove("err")
+                    }}/>
+                    <button onClick={registroCorreo} className="buttons">{lang.register.btn}</button>
+                </div>
+            </div>
+            <div className="form-container sign-in-container">
+                <div className="form">
+                    <h1>{lang.login.title}</h1>
+                    <div className='alert alert-danger' hidden={!errores.length>0}>
+                        <h2>Error</h2>
+                        {errores}
+                    </div>
+                    <div className="social-container">
+                        <button onClick={iniciaSesionGoogle} type="button" className="social">
+                            <Icon icon="mingcute:google-fill" />
+                        </button>
+                        <button onClick={iniciaSesionFacebook} type="button" className="social">
+                            <Icon icon="bxl:facebook" />
+                        </button>
+                        <button onClick={iniciaSesionGitHub} type="button" className="social">
+                            <Icon icon="fluent-mdl2:git-hub-logo" />
+                        </button>
+                    </div>
+                    <span>{lang.login.subtitle}</span>
+                    <input id='inicioMail' type="email" placeholder={lang.login.input.mail} onChange={(e) => {
                         emailInicio = e.target.value;
                         setErrores([])
                         document.getElementById("inicioMail").classList.remove("err")
                     }}/>
-                    <input id='inicioPass' type="password" placeholder="Password" onChange={(e) => {
+                    <input id='inicioPass' type="password" placeholder={lang.login.input.pass} onChange={(e) => {
                         passInicio = e.target.value;
                         setErrores([])
                         document.getElementById("inicioPass").classList.remove("err")
                     }}/>
-                    <button onClick={inicioCorreo} className="buttons">Log in</button>
+                    <button onClick={inicioCorreo} className="buttons">{lang.login.btn}</button>
                 </div>
             </div>
             <div className="overlay-container">
                 <div className="overlay">
                     <div className="overlay-panel overlay-left">
-                    <h1>Welcome</h1>
+                    <h1>{lang.content.p1.title}</h1>
                         <p>
-                            Sign in with your personal information
+                        {lang.content.p1.subtitle}
                         </p>
-                        <button onClick={cambioClase} className="buttons ghost" id="signIn">Sign in</button>
+                        <button onClick={cambioClase} className="buttons ghost" id="signIn">{lang.content.p1.btn}</button>
                     </div>
                     <div className="overlay-panel overlay-right">
-                    <h1>Hello, welcome</h1>
-                    <p>Enter your information to register by clicking</p>
-                    <button onClick={cambioClase} className="buttons ghost" id="signUp">Sign up</button>
+                    <h1>{lang.content.p2.title}</h1>
+                    <p>{lang.content.p2.subtitle}</p>
+                    <button onClick={cambioClase} className="buttons ghost" id="signUp">{lang.content.p2.btn}</button>
                 </div>
             </div>
         </div>
