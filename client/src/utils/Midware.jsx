@@ -12,7 +12,6 @@ const Midware = ({ Component }) => {
   useEffect(() => {
 
     onAuthStateChanged(auth, (user) => {
-      console.log(user)
       setIsAuth(!!user);
       setIsLoading(false);
     });

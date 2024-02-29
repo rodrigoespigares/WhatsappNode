@@ -39,7 +39,11 @@ const firebaseConfig = {
         Object.keys(doc.fields).forEach(field => {
             cleanedData[field] = doc.fields[field][Object.keys(doc.fields[field])[0]];
         });
-        userConf.push(cleanedData);
+        let userExiste = userConf.findIndex((element) => element.uid == cleanedData.uid)
+
+        if(userExiste == -1){
+            userConf.push(cleanedData);
+        }
         });
     })
     .catch(error => {
@@ -96,9 +100,8 @@ grupos.push(futbol);
 io.on('connection', (socket) => {    
     
     socket.on("login",(usuario) => {
-        readConfigUserCollection();
         socket.uid = usuario.uid;
-        
+        readConfigUserCollection();
         let usuarioEncontrado = userConf.findIndex((element) => element.uid == socket.uid);
         if(usuarioEncontrado != -1){
             socket.nick = userConf[usuarioEncontrado].nick;
@@ -120,6 +123,7 @@ io.on('connection', (socket) => {
             .catch((error) => {
                 console.error('Error al agregar nuevo usuario:', error);
             });
+            socket.emit("verConfig",true)
         }    
         let user = {
             id: socket.id,
@@ -140,6 +144,17 @@ io.on('connection', (socket) => {
             io.emit("newUser", usuarios);
             socket.broadcast.emit("desconectado", user);
         });
+        socket.on("cerrarSesion",() => {
+            let indiceUsuario = usuarios.findIndex(usuario => usuario.uid == socket.uid);
+            if (indiceUsuario !== -1) {
+                usuarios.splice(indiceUsuario, 1);
+            }
+            io.emit("newUser", usuarios);
+            socket.broadcast.emit("desconectado", user);
+        })
+        socket.on("verConfig",(value) => {
+            socket.emit("verConfig",value)
+        })
         socket.on("clickUser",(uid) => {
             let indiceUsuario = usuarios.findIndex(usuario => usuario.uid == uid);
             if(indiceUsuario>-1){
@@ -166,7 +181,6 @@ io.on('connection', (socket) => {
         })        
         socket.on("mensajePrivado",(value) => {
             let mensaje = value.mensaje;
-            console.log(value.destinatarioId)
             let id = value.destinatarioId;
             let mnd;
             if(socket.grupo){
@@ -187,10 +201,9 @@ io.on('connection', (socket) => {
             socket.to(id).emit('mensajePrivado', mnd);
         });
         socket.on("configurando", (value) => {
-            userConf=[];
-            readConfigUserCollection();
+            
             let indiceUsuario = usuarios.findIndex(usuario => usuario.uid == socket.uid);
-            if (indiceUsuario !== -1) {
+            if (indiceUsuario != -1) {
                 usuarios.splice(indiceUsuario, 1);
             }
             user = {
@@ -200,12 +213,27 @@ io.on('connection', (socket) => {
                 estado: value.estado,
                 foto: value.foto
             }
+            
 
             usuarios.push(user);
             io.emit("newUser", usuarios);
             let foto = "";
             if(user.foto.startsWith("http")){
                 foto = new URL(user.foto).pathname
+            }
+            let userMod={
+                nick: value.name,
+                uid: socket.uid,
+                estado: value.estado,
+                foto: foto
+            }
+
+            let userExiste = userConf.findIndex((element) => element.uid == user.uid)
+            if (userExiste !=-1){
+                userConf.splice(userExiste,1);
+                userConf.push(userMod)
+            }else if(userExiste == -1){
+                userConf.push(userMod);
             }
 
             const userDocRef = firestore.collection('configUser').where('uid', '==', socket.uid);

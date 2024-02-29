@@ -39,6 +39,7 @@ export default function Info() {
     const auth = getAuth();
     signOut(auth)
       .then(() => {
+        socket.emit("cerrarSesion")
         navigate('/');
       })
       .catch((error) => {

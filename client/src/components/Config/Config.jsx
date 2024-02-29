@@ -11,6 +11,7 @@ export default function Config() {
     let [tempIMG, setTemp] = useState("");
     let [estado, setEstado] = useState("");
     let [name, setName] = useState("");
+    let [verConf, setVerConf] = useState(false)
     
     function cambioFoto(e){
         setTemp(e.target.src)
@@ -31,6 +32,7 @@ export default function Config() {
         }
 
         socket.emit("configurando", mnd);
+        cerrarConf();
     }
 
     socket.on("conectado", (value) => {
@@ -38,6 +40,12 @@ export default function Config() {
         setEstado(value.estado)
         setName(value.nick)
     })
+    socket.on("verConfig",(value) => {
+        setVerConf(value)
+    })
+    function cerrarConf (){
+        socket.emit("verConfig",false)
+    }
     let info = "";
     if(usuario){
         
@@ -95,10 +103,10 @@ export default function Config() {
             </section>
     }
     return (
-        <div className='position-absolute configuracion'>
+        <div className='position-absolute configuracion' style={{display: verConf==true?"block":"none"}}>
             <section className='d-flex justify-content-between config__header'>
                 <h2>Configuración</h2>
-                <button className='btn fs-4'><Icon icon="material-symbols:close" /></button>
+                <button onClick={cerrarConf} className='btn fs-4'><Icon icon="material-symbols:close" /></button>
             </section>
             {info}
         </div>

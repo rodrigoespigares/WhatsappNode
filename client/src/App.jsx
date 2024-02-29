@@ -27,7 +27,6 @@ export default function App() {
       setIsConnected(false);
     }
     
-    socket.on("entradaUsuarios", (msg) => {console.log(msg)})
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     
