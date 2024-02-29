@@ -78,11 +78,11 @@ export default function Config() {
                         <img src={tempIMG==''?usuario.foto:tempIMG} alt='' />
                     </div>
                     <div className='d-flex justify-content-between mt-2'>
-                        <div onClick={cambioFoto} className='galery__option__perfil'><img src={"http://localhost:3000/"+"images/muestra1.jpg"} alt="" /></div>
-                        <div onClick={cambioFoto} className='galery__option__perfil'><img src={"http://localhost:3000/"+"images/muestra2.jpg"} alt="" /></div>
-                        <div onClick={cambioFoto} className='galery__option__perfil'><img src={"http://localhost:3000/"+"images/muestra3.jpg"} alt="" /></div>
-                        <div onClick={cambioFoto} className='galery__option__perfil'><img src={"http://localhost:3000/"+"images/muestra4.jpg"} alt="" /></div>
-                        <div onClick={cambioFoto} className='galery__option__perfil'><img src={"http://localhost:3000/"+"images/muestra5.jpg"} alt="" /></div>
+                        <div onClick={cambioFoto} className='galery__option__perfil'><img src={BASE_URL+"images/muestra1.jpg"} alt="" /></div>
+                        <div onClick={cambioFoto} className='galery__option__perfil'><img src={BASE_URL+"images/muestra2.jpg"} alt="" /></div>
+                        <div onClick={cambioFoto} className='galery__option__perfil'><img src={BASE_URL+"images/muestra3.jpg"} alt="" /></div>
+                        <div onClick={cambioFoto} className='galery__option__perfil'><img src={BASE_URL+"images/muestra4.jpg"} alt="" /></div>
+                        <div onClick={cambioFoto} className='galery__option__perfil'><img src={BASE_URL+"images/muestra5.jpg"} alt="" /></div>
                         <div className='contenedor'>
                             <div className="add_file">
                                 <input onChange={subirArchivo} type="file" id="imgInputUser" name='imagenCompartido' accept="image/*"/>
