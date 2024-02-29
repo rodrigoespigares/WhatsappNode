@@ -2,6 +2,9 @@ body{
   padding: 0;
   margin: 0;
 }
+.noclick{
+  pointer-events: none;
+}
 #root{
   min-height: 100vh;
 }

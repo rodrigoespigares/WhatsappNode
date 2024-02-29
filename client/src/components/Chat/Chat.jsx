@@ -29,6 +29,7 @@ export default function Chat() {
         };
     }, []);
     socket.on("mensaje", (value) => {
+        console.log(document.location.origin);
         let article =   <article key={value.text + Date.now()} className='recibido my-2'>
                             <h6>{value.user}</h6> 
                             <p>{value.text}</p>  
@@ -61,7 +62,9 @@ export default function Chat() {
     function clickIcon(e) {
         document.getElementById("texto").value += e.target.innerHTML
     }
-    function nombreArchivo() {
+    function nombreArchivo(e) {
+        
+
         if (document.getElementById("fileInput").files[0] != undefined) {
             if (document.getElementById("fileInput").files[0].name != "" || document.getElementById("fileInput").files.length > 0) {
                 let fileNameElement = document.getElementById('fileName');
@@ -295,10 +298,6 @@ export default function Chat() {
                             <div className="archivos">
                                 <input onChange={nombreArchivo} type="file" id="fileInput" name='archivoCompartido' />
                                 <label htmlFor="fileInput" className='chat__input__icon__color archivo'><Icon icon="material-symbols-light:upload-file-rounded" /><span> un archivo</span></label>
-                            </div>
-                            <div className="archivos">
-                                <input onChange={nombreArchivo} type="file" id="imgInput" name='imagenCompartido' accept="image/*"/>
-                                <label htmlFor="imgInput" className='chat__input__icon__color foto'><Icon icon="material-symbols-light:photo-camera" /><span> una imagen</span></label>
                             </div>
                         </div>
                         <div id='fichero' className='text-white'>

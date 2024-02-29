@@ -5,6 +5,7 @@ import { socket } from '../../socket';
 import { useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { BASE_URL } from '../../config';
+import { BASE_URL_2000 } from '../../config';
 
 export default function Config() {
     let [usuario, setUsuario] = useState(null);
@@ -15,7 +16,29 @@ export default function Config() {
     
     function cambioFoto(e){
         setTemp(e.target.src)
-
+    }
+    function subirArchivo() {
+        let fileInput = document.getElementById("imgInputUser");
+        let endpoint = BASE_URL_2000 + "perfil";
+        let archivo = fileInput.files[0];
+        let form = new FormData();
+        form.append("fichero", archivo);
+        
+        fetch(endpoint, {
+            method: 'POST',
+            body: form
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        }).then(data => {
+            console.log(data)
+            setTemp(BASE_URL+"images/"+data.name)
+        }).catch((error) => {
+            console.error('Error:', error);
+            // Aquí puedes manejar los errores que ocurran durante la solicitud
+        });
     }
     function save(){
         if(tempIMG == ""){
@@ -55,15 +78,15 @@ export default function Config() {
                         <img src={tempIMG==''?usuario.foto:tempIMG} alt='' />
                     </div>
                     <div className='d-flex justify-content-between mt-2'>
-                        <div onClick={cambioFoto} className='galery__option__perfil'><img src={BASE_URL+"images/muestra1.jpg"} alt="" /></div>
-                        <div onClick={cambioFoto} className='galery__option__perfil'><img src={BASE_URL+"images/muestra2.jpg"} alt="" /></div>
-                        <div onClick={cambioFoto} className='galery__option__perfil'><img src={BASE_URL+"images/muestra3.jpg"} alt="" /></div>
-                        <div onClick={cambioFoto} className='galery__option__perfil'><img src={BASE_URL+"images/muestra4.jpg"} alt="" /></div>
-                        <div onClick={cambioFoto} className='galery__option__perfil'><img src={BASE_URL+"images/muestra5.jpg"} alt="" /></div>
+                        <div onClick={cambioFoto} className='galery__option__perfil'><img src={"http://localhost:3000/"+"images/muestra1.jpg"} alt="" /></div>
+                        <div onClick={cambioFoto} className='galery__option__perfil'><img src={"http://localhost:3000/"+"images/muestra2.jpg"} alt="" /></div>
+                        <div onClick={cambioFoto} className='galery__option__perfil'><img src={"http://localhost:3000/"+"images/muestra3.jpg"} alt="" /></div>
+                        <div onClick={cambioFoto} className='galery__option__perfil'><img src={"http://localhost:3000/"+"images/muestra4.jpg"} alt="" /></div>
+                        <div onClick={cambioFoto} className='galery__option__perfil'><img src={"http://localhost:3000/"+"images/muestra5.jpg"} alt="" /></div>
                         <div className='contenedor'>
                             <div className="add_file">
-                                <input  type="file" id="imgInput" name='imagenCompartido' accept="image/*"/>
-                                <label htmlFor="imgInput" className='btn fs-4'><Icon icon="material-symbols:add"/></label>
+                                <input onChange={subirArchivo} type="file" id="imgInputUser" name='imagenCompartido' accept="image/*"/>
+                                <label htmlFor="imgInputUser" className='btn fs-4'><Icon icon="material-symbols:add"/></label>
                             </div>
                         </div>
                     </div>

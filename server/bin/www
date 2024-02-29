@@ -66,15 +66,15 @@ app.use(cors());
  */
 
 var server = http.createServer(app);
-// const io = new Server(server);
- const io = new Server({
+const io = new Server(server);
+/* const io = new Server({
     cors: {
       origin: "http://localhost:5173"
     }
   });
   
   io.listen(4000); 
-
+*/
 
 let programacion = {
     id: "programacion",
@@ -132,10 +132,15 @@ io.on('connection', (socket) => {
             estado: socket.estado,
             foto: socket.foto
         }
-        usuarios.push(user)
+        let exiteUer = usuarios.findIndex(element => element.uid == user.uid)
+
+        if(exiteUer == -1){
+            usuarios.push(user)
+        }else{
+            io.emit("conectado", user);
+        }
         io.emit("newUser", usuarios);
         io.emit("grupos", grupos);
-        io.emit("conectado", user);
         socket.on('disconnect', () => {
             let indiceUsuario = usuarios.findIndex(usuario => usuario.uid == socket.uid);
             if (indiceUsuario !== -1) {
@@ -282,7 +287,7 @@ io.on('connection', (socket) => {
         });
         socket.on("mensaje", (msg) => {
             let mnd={
-                user:socket.nick,
+                user:user.nick,
                 uid:socket.uid,
                 text:msg
             }
