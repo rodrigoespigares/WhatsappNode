@@ -20,6 +20,15 @@
 .config__header .btn{
     color: white !important;
 }
+.configuracion__info__user__foto{
+    width: 15vw;
+    height: 15vw;
+}
+.configuracion__info__user__foto img{
+    width: 100%;
+    height: 100%;
+    border-radius: 51%;
+}
 .configuracion__info{
     display: flex;
     gap: 3rem;
@@ -35,10 +44,12 @@
 .galery__option__perfil{
     width: 2vw;
     height: 2vw;
+    cursor: pointer;
 }
 .galery__option__perfil img{
     width: 100%;
     height: 100%;
+    border-radius: 51%;
 }
 
 .configuracion__info .btn{
@@ -71,3 +82,13 @@
     cursor: pointer;
     width: 100%;
   }
+
+  .linea{
+    border-bottom: .1rem solid white !important;
+    pointer-events:inherit !important;
+  }
+
+.configuracion__info input[type=text]{
+    text-align: left !important;
+    pointer-events: none;
+}

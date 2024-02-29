@@ -174,7 +174,7 @@ let navega = useNavigate();
     }
     
   return (
-    <>
+    
         <section id="login__register">
         <div className="container" id="container">
             <div className="form-container sign-up-container">
@@ -257,7 +257,5 @@ let navega = useNavigate();
         </div>
     </div>
 </section>
-    
-    </>
   )
 }

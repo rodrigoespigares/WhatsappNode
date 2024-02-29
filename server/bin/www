@@ -186,6 +186,49 @@ io.on('connection', (socket) => {
 
             socket.to(id).emit('mensajePrivado', mnd);
         });
+        socket.on("configurando", (value) => {
+            userConf=[];
+            readConfigUserCollection();
+            let indiceUsuario = usuarios.findIndex(usuario => usuario.uid == socket.uid);
+            if (indiceUsuario !== -1) {
+                usuarios.splice(indiceUsuario, 1);
+            }
+            user = {
+                id: socket.id,
+                nick: value.name,
+                uid: socket.uid,
+                estado: value.estado,
+                foto: value.foto
+            }
+
+            usuarios.push(user);
+            io.emit("newUser", usuarios);
+            let foto = "";
+            if(user.foto.startsWith("http")){
+                foto = new URL(user.foto).pathname
+            }
+
+            const userDocRef = firestore.collection('configUser').where('uid', '==', socket.uid);
+            userDocRef.get()
+              .then((querySnapshot) => {
+                if (!querySnapshot.empty) {
+                    
+                  const docToUpdate = querySnapshot.docs[0];
+                  foto = foto == "" ? user.foto : foto.substring(1);
+                  return docToUpdate.ref.update({
+                    nick: user.nick,
+                    estado: user.estado,
+                    foto: foto,
+                  });
+                }
+              })
+              .then(() => {
+                console.log('Datos actualizados con éxito.');
+              })
+              .catch((error) => {
+                console.error('Error al actualizar datos:', error);
+              });
+        })
         socket.on("escribiendo", (value) => {
             let mnd = {
                 if: value,
@@ -217,28 +260,6 @@ io.on('connection', (socket) => {
             }
             socket.broadcast.emit("mensaje", mnd)
         });
-        socket.on("updateUser",(value) => {
-            const userDocRef = firestore.collection('userConf').where('uid', '==', socket.uid);
-
-            userDocRef.get()
-              .then((querySnapshot) => {
-                if (!querySnapshot.empty) {
-                  const docToUpdate = querySnapshot.docs[0];
-                  
-                  return docToUpdate.ref.update({
-                    nick: value.nick,
-                    estado: value.estado,
-                    foto: BASE_URL+"images/"+value.foto,
-                  });
-                }
-              })
-              .then(() => {
-                console.log('Datos actualizados con éxito.');
-              })
-              .catch((error) => {
-                console.error('Error al actualizar datos:', error);
-              });
-        })
     })
 
 });
