@@ -58,7 +58,7 @@ export default function Config() {
         cerrarConf();
     }
 
-    socket.on("conectado", (value) => {
+    socket.on("probando", (value) => {
         setUsuario(value);
         setEstado(value.estado)
         setName(value.nick)

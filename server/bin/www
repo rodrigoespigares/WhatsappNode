@@ -8,7 +8,7 @@ var app = require('../app');
 var debug = require('debug')('proyectonote:server');
 var http = require('http');
 const cors = require('cors');
-const BASE_URL = "http://localhost:3000/";
+const BASE_URL = process.env.RENDER_EXTERNAL_URL || "http://192.168.1.90:3000/";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAW6uezaGstSNL-q22838I1KjqMHwywezY",
@@ -98,8 +98,13 @@ grupos.push(programacion);
 grupos.push(futbol);
 
 io.on('connection', (socket) => {    
-    
+    let misDatos;
+    misDatos={
+        id:socket.id
+    }
     socket.on("login",(usuario) => {
+        
+        
         socket.uid = usuario.uid;
         readConfigUserCollection();
         let usuarioEncontrado = userConf.findIndex((element) => element.uid == socket.uid);
@@ -137,10 +142,21 @@ io.on('connection', (socket) => {
         if(exiteUer == -1){
             usuarios.push(user)
         }else{
-            io.emit("conectado", user);
+            socket.emit("Sesion iniciada")
+        }
+        if(misDatos.id == socket.id){
+            misDatos={
+                id: socket.id,
+                nick: socket.nick,
+                uid: socket.uid,
+                estado: socket.estado,
+                foto: socket.foto
+            }
         }
         io.emit("newUser", usuarios);
         io.emit("grupos", grupos);
+        io.emit("conectado", user);
+        socket.emit("probando",misDatos)
         socket.on('disconnect', () => {
             let indiceUsuario = usuarios.findIndex(usuario => usuario.uid == socket.uid);
             if (indiceUsuario !== -1) {
