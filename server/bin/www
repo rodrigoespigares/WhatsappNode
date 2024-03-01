@@ -156,7 +156,7 @@ io.on('connection', (socket) => {
         io.emit("newUser", usuarios);
         io.emit("grupos", grupos);
         io.emit("conectado", user);
-        socket.emit("probando",misDatos)
+        socket.emit("infoConfiguracion",misDatos)
         socket.on('disconnect', () => {
             let indiceUsuario = usuarios.findIndex(usuario => usuario.uid == socket.uid);
             if (indiceUsuario !== -1) {
