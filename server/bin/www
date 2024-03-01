@@ -207,14 +207,14 @@ io.on('connection', (socket) => {
             if(socket.grupo){
                 mnd={
                     grupo:socket.nombre_grupo,
-                    user:socket.nick,
-                    uid:socket.uid,
+                    user:misDatos.nick,
+                    uid:misDatos.uid,
                     text:mensaje
                 }
             }else{
                 mnd={
-                    user:socket.nick,
-                    uid:socket.uid,
+                    user:misDatos.nick,
+                    uid:misDatos.uid,
                     text:mensaje
                 }
             }
